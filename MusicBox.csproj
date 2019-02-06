@@ -69,6 +69,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MusicBox.cs" />
+    <Compile Include="UI\AdvWindowUIState.cs" />
+    <Compile Include="UI\CDInterfaceManager.cs" />
+    <Compile Include="UI\ConditionalInterface.cs" />
+    <Compile Include="UI\Drawing.cs" />
+    <Compile Include="UI\UIAdvPanel.cs" />
+    <Compile Include="UI\UIAdvText.cs" />
+    <Compile Include="UI\UIButton.cs" />
+    <Compile Include="UI\UISlider.cs" />
+    <Compile Include="UI\UISlot.cs" />
+    <Compile Include="UI\UITextButton.cs" />
+    <Compile Include="UI\UIValueChanger.cs" />
+    <Compile Include="UI\WindowUIState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="代码规范.md" />
