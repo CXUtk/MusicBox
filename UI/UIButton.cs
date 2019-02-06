@@ -70,7 +70,7 @@ namespace MusicBox.UI
 		{
             if(Tooltip != "" && ContainsPoint(Main.MouseScreen))
 			{
-				MusicBox.ShowTooltip = Tooltip;
+				MusicBox.Instance.ShowTooltip = Tooltip;
 			}
 
 			if (!IsMouseHovering)

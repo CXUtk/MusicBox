@@ -61,6 +61,10 @@
   <ItemGroup>
     <Content Include="build.txt" />
     <Content Include="description.txt" />
+    <Content Include="Images\AdvInvBack1.png" />
+    <Content Include="Images\Box.png" />
+    <Content Include="Images\Box2.png" />
+    <Content Include="Images\CloseButton.png" />
     <Content Include="Libraries\Microsoft.Xna.Framework.dll" />
     <Content Include="Libraries\Microsoft.Xna.Framework.Game.dll" />
     <Content Include="Libraries\Microsoft.Xna.Framework.Graphics.dll" />
@@ -68,7 +72,9 @@
     <Content Include="Libraries\Terraria.exe" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MBPlayer.cs" />
     <Compile Include="MusicBox.cs" />
+    <Compile Include="UIPage\TurretConfigUI.cs" />
     <Compile Include="UI\AdvWindowUIState.cs" />
     <Compile Include="UI\CDInterfaceManager.cs" />
     <Compile Include="UI\ConditionalInterface.cs" />
@@ -81,10 +87,15 @@
     <Compile Include="UI\UITextButton.cs" />
     <Compile Include="UI\UIValueChanger.cs" />
     <Compile Include="UI\WindowUIState.cs" />
+    <Compile Include="Utils\HotKeyControl.cs" />
+    <Compile Include="Utils\KeyBoardAction.cs" />
+    <Compile Include="Utils\ModHelper.cs" />
+    <Compile Include="Utils\ResourceLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="代码规范.md" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />

@@ -14,6 +14,8 @@ using Terraria.ModLoader;
 using ReLogic.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MusicBox.Utils;
+using MusicBox.UI;
 
 
 namespace MusicBox
@@ -22,17 +24,43 @@ namespace MusicBox
 	public class MusicBox : Mod
 	{
 		public static MusicBox Instance;
+		/// <summary>
+		/// 存储所有在"Images/"下的图片
+		/// </summary>
+		public static Dictionary<string, Texture2D> ModTexturesTable = new Dictionary<string, Texture2D>();
 
-		
+		/// <summary>
+		/// 鼠标显示的Tooltip，区别于原版，是UI系统的Tooltip
+		/// </summary>
+		public string ShowTooltip
+		{
+			get;
+			set;
+		}
+
+		private CDInterfaceManager CDInterfaceManager;
+
+		public bool CanShowMusicPlayUI
+		{
+			get;
+			set;
+		} 
+
+
+
 		public MusicBox()
 		{
 			Properties = new ModProperties()
 			{
-
 				Autoload = true,
 				AutoloadSounds = true,
 			};
 
+		}
+
+		private void InitUI()
+		{
+			CDInterfaceManager = new CDInterfaceManager();
 		}
 
 		public override void Load()
@@ -40,7 +68,9 @@ namespace MusicBox
 			Instance = this;
 			if (!Main.dedServ)
 			{
-				
+				ResourceLoader.LoadAllTextures();
+				InitUI();
+				HotKeyControl.RegisterKey();
 			}
 		}
 
