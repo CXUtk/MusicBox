@@ -43,6 +43,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Microsoft.Xna.Framework.Graphics.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio">
+      <HintPath>lib\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="ReLogic, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\ReLogic.dll</HintPath>
@@ -61,14 +64,13 @@
   <ItemGroup>
     <Content Include="build.txt" />
     <Content Include="description.txt" />
-    <Content Include="Libraries\Microsoft.Xna.Framework.dll" />
-    <Content Include="Libraries\Microsoft.Xna.Framework.Game.dll" />
-    <Content Include="Libraries\Microsoft.Xna.Framework.Graphics.dll" />
-    <Content Include="Libraries\ReLogic.dll" />
-    <Content Include="Libraries\Terraria.exe" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MusicBox.cs" />
+    <Compile Include="MusicBoxPlayer.cs" />
+    <Compile Include="MusicBoxWorld.cs" />
+    <Compile Include="Music\MusicPlayHandler.cs" />
+    <Compile Include="Music\SampleAggregator.cs" />
     <Compile Include="UI\AdvWindowUIState.cs" />
     <Compile Include="UI\CDInterfaceManager.cs" />
     <Compile Include="UI\ConditionalInterface.cs" />
