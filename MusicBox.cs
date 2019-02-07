@@ -23,6 +23,8 @@ namespace MusicBox
 	// MOD的主类名字，需要与文件名、MOD名完全一致，并且继承Mod类
 	public class MusicBox : Mod
 	{
+		public const string TEST_MUSIC_FOLDER = @"D:\CloudMusic";
+
 		public static MusicBox Instance;
 		/// <summary>
 		/// 存储所有在"Images/"下的图片
@@ -40,6 +42,8 @@ namespace MusicBox
 
 		private CDInterfaceManager CDInterfaceManager;
 
+		public MusicPlayHandler MusicPlayer { get; private set; }
+		
 		public bool CanShowMusicPlayUI
 		{
 			get;
@@ -66,6 +70,8 @@ namespace MusicBox
 		public override void Load()
 		{
 			Instance = this;
+			MusicPlayer = new MusicPlayHandler(TEST_MUSIC_FOLDER);
+
 			if (!Main.dedServ)
 			{
 				ResourceLoader.LoadAllTextures();
@@ -74,7 +80,16 @@ namespace MusicBox
 			}
 		}
 
-		
+		public override void Unload()
+		{
+			MusicPlayer.Dispose();
+			MusicPlayer = null;
+		}
+
+		public override void PreSaveAndQuit()
+		{
+			MusicPlayer.Stop();
+		}
 	}
 
 }
