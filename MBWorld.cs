@@ -2,7 +2,7 @@
 
 namespace MusicBox
 {
-	public class MusicBoxWorld : ModWorld
+	public class MBWorld : ModWorld
 	{
 	}
 }

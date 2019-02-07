@@ -12,9 +12,9 @@ using Terraria.GameContent.UI.Elements;
 using MusicBox.UI;
 using MusicBox.Utils;
 
-namespace MusicBox
+namespace MusicBox.UIPage
 {
-	public class TurretConfigUI : AdvWindowUIState
+	public class MusicPlayUI : AdvWindowUIState
 	{   
 		private const float UI_PANEL_WIDTH = 480f;
 		private const float UI_PANEL_HEIGHT = 360f;

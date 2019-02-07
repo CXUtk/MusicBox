@@ -16,14 +16,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MusicBox.Utils;
 using MusicBox.UI;
-
+using MusicBox.Music;
 
 namespace MusicBox
 {
 	// MOD的主类名字，需要与文件名、MOD名完全一致，并且继承Mod类
 	public class MusicBox : Mod
 	{
-		public const string TEST_MUSIC_FOLDER = @"D:\CloudMusic";
+		public const string TEST_MUSIC_FOLDER = @"E:\CloudMusic";
 
 		public static MusicBox Instance;
 		/// <summary>
@@ -43,6 +43,8 @@ namespace MusicBox
 		private CDInterfaceManager CDInterfaceManager;
 
 		public MusicPlayHandler MusicPlayer { get; private set; }
+
+		public ConditionalInterface musicUI;
 		
 		public bool CanShowMusicPlayUI
 		{
@@ -65,12 +67,41 @@ namespace MusicBox
 		private void InitUI()
 		{
 			CDInterfaceManager = new CDInterfaceManager();
+			musicUI = new ConditionalInterface(() => CanShowMusicPlayUI);
+			musicUI.SetState(new UIPage.MusicPlayUI());
+			CDInterfaceManager.Add(musicUI);
+		}
+
+		public override void UpdateUI(GameTime gameTime)
+		{
+			CDInterfaceManager.Update(gameTime);
+		}
+
+		public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
+		{
+			int MouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+			if (MouseTextIndex != -1)
+			{
+				layers.Insert(MouseTextIndex, new LegacyGameInterfaceLayer(
+					"MusicBox: FFSUI",
+					delegate
+					{
+						CDInterfaceManager.Draw(Main.spriteBatch);
+						//if (CanShowDestruct)
+						//{
+						//	FFSDestructer.Update(Main._drawInterfaceGameTime);
+						//	FFSDestructer.CurrentState.Draw(Main.spriteBatch);
+						//}
+						return true;
+					},
+					InterfaceScaleType.UI)
+				);
+			}
 		}
 
 		public override void Load()
 		{
 			Instance = this;
-			MusicPlayer = new MusicPlayHandler(TEST_MUSIC_FOLDER);
 
 			if (!Main.dedServ)
 			{
@@ -78,6 +109,11 @@ namespace MusicBox
 				InitUI();
 				HotKeyControl.RegisterKey();
 			}
+		}
+
+		public override void PostSetupContent()
+		{
+			MusicPlayer = new MusicPlayHandler(TEST_MUSIC_FOLDER);
 		}
 
 		public override void Unload()

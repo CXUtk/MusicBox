@@ -8,4 +8,4 @@ includePDB = true
 dllReferences = NAudio
 languageVersion = 6
 homepage = http://fs49.org/
-buildIgnore = *.csproj, *.sln, obj\*, bin\*, *.suo, *.user, .git\*, .vs\*, Libraries\*, *.md, UI\
+buildIgnore = *.csproj, *.sln, obj\*, bin\*, *.suo, *.user, .git\*, .vs\*, Libraries\*, *.md

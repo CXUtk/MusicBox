@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MusicBox.Utils;
 using MusicBox.UI;
 using Terraria.GameInput;
+using Terraria;
 
 namespace MusicBox
 {
@@ -17,6 +18,19 @@ namespace MusicBox
 		public override void ProcessTriggers(TriggersSet triggersSet)
 		{
 			HotKeyControl.PressKey(triggersSet);
+		}
+
+		public override void OnEnterWorld(Player player)
+		{
+			base.OnEnterWorld(player);
+		}
+
+		public override void PostUpdate()
+		{
+			if (MusicBox.Instance.CanShowMusicPlayUI)
+			{
+				MusicBox.Instance.MusicPlayer.Play();
+			}
 		}
 	}
 }

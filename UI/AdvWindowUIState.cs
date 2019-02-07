@@ -16,7 +16,6 @@ namespace MusicBox.UI
 		protected UIAdvPanel WindowPanel;
 		private UIButton close;
 		private Vector2 _offset = new Vector2();
-		private Texture2D _windowTexture;
 		private bool _dragging = false;
 
 		protected sealed override void DrawSelf(SpriteBatch spriteBatch)

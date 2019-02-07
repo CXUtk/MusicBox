@@ -13,7 +13,6 @@ namespace MusicBox.Music
 	{
 		private bool isMusicEnd;
 		private bool isStopped;
-		private bool isPaused;
 		private int currentSong;
 		private Thread playSongThread;
 		private IWavePlayer outputDevice;
@@ -25,14 +24,16 @@ namespace MusicBox.Music
 		public string PlaySrc { get; private set; }
 
 		public Version Version { get; }
-		public List<string> SongName { get; private set; }
+		public List<string> SongNames { get; private set; }
+
+		public bool IsPaused { get; private set; }
 
 		private MusicPlayHandler()
 		{
 			Version = typeof(Program).Assembly.GetName().Version;
 			isMusicEnd = false;
 			isStopped = true;
-			isPaused = false;
+			IsPaused = false;
 			currentSong = 0;
 			outputDevice = new WaveOutEvent
 			{
@@ -50,8 +51,8 @@ namespace MusicBox.Music
 		{
 			Stop();
 			PlaySrc = src;
-			SongName = new List<string>(Directory.EnumerateFiles(src));
-			audioFile = new AudioFileReader(SongName[0]);
+			SongNames = new List<string>(Directory.EnumerateFiles(src));
+			audioFile = null;
 		}
 
 		public void Run()
@@ -66,7 +67,8 @@ namespace MusicBox.Music
 			// 性能关键点，考虑用cache
 			// Dispose 不要乱用， 容易引发异常且未观测到任何性能提升
 			// audioFile.Dispose();
-			audioFile = new AudioFileReader(SongName[currentSong]);
+			
+			audioFile = new AudioFileReader(SongNames[currentSong]);
 			SampleAggregator aggregator = new SampleAggregator(audioFile)
 			{
 				NotificationCount = audioFile.WaveFormat.SampleRate / 10000,
@@ -93,16 +95,17 @@ namespace MusicBox.Music
 
 		private void playNew()
 		{
+			Main.NewText("播放");
 			playSongThread = new Thread(playSong);
 			playSongThread.Start();
 			isMusicEnd = false;
 			isStopped = false;
-			isPaused = false;
+			IsPaused = false;
 		}
 
 		private void resume()
 		{
-			isPaused = false;
+			IsPaused = false;
 			outputDevice.Play();
 		}
 
@@ -116,7 +119,7 @@ namespace MusicBox.Music
 				playSongThread.Abort();
 				isMusicEnd = true;
 			}
-			currentSong = (currentSong + 1) % SongName.Count;
+			currentSong = (currentSong + 1) % SongNames.Count;
 			playNew();
 		}
 
@@ -128,7 +131,7 @@ namespace MusicBox.Music
 			playSongThread.Abort();
 			currentSong--;
 			if (currentSong < 0)
-				currentSong += SongName.Count;
+				currentSong += SongNames.Count;
 			playNew();
 		}
 
@@ -155,7 +158,7 @@ namespace MusicBox.Music
 				playNew();
 				return;
 			}
-			if (isPaused)
+			if (IsPaused)
 			{
 				resume();
 			}
@@ -163,7 +166,7 @@ namespace MusicBox.Music
 
 		public void Pause()
 		{
-			isPaused = true;
+			IsPaused = true;
 			outputDevice.Pause();
 		}
 
