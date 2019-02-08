@@ -29,6 +29,10 @@ namespace MusicBox
 		{
 			if (MusicBox.Instance.CanShowMusicPlayUI)
 			{
+				if (!MusicBox.Instance.IsRunning)
+				{
+					MusicBox.Instance.SetNewMusicPlayer();
+				}
 				MusicBox.Instance.MusicPlayer.Play();
 			}
 		}

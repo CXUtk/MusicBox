@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using System.IO;
+using MusicBox.UI;
 
 namespace MusicBox.Utils
 {

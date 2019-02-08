@@ -11,7 +11,7 @@ using Terraria.ID;
 using System.IO;
 using Terraria.GameInput;
 
-namespace MusicBox
+namespace MusicBox.Utils
 {
     public static class HotKeyControl
     {

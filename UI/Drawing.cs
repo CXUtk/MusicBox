@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Terraria;
 
-namespace MusicBox
+namespace MusicBox.UI
 {
     public class Drawing
     {

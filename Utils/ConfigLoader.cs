@@ -18,15 +18,15 @@ namespace MusicBox.Utils
 			set;
 		}
 
-		public static bool FirstTimeUse
-		{
-			get;
-			set;
-		}
+		//public static bool FirstTimeUse
+		//{
+		//	get;
+		//	set;
+		//}
 
 		private const string CONFIG_FILE_NAME = "MusicBoxConfig.json";
 
-		public static void LoadCondig()
+		public static void LoadConfig()
 		{
 			MusicConfig = new MusicConfig();
 			if (!Directory.Exists(Main.SavePath))
@@ -39,7 +39,7 @@ namespace MusicBox.Utils
 				Path.DirectorySeparatorChar,
 				CONFIG_FILE_NAME
 			});
-			FirstTimeUse = false;
+			//FirstTimeUse = false;
 			if (File.Exists(path))
 			{
 				using (StreamReader r = new StreamReader(path))
@@ -50,11 +50,13 @@ namespace MusicBox.Utils
 			}
 			else
 			{
-				FirstTimeUse = true;
+				//FirstTimeUse = true;
+				MusicConfig = new MusicConfig();
+				SaveConfig(MusicConfig);
 			}
 		}
 
-		public static void SaveConfig()
+		public static void SaveConfig(MusicConfig config)
 		{
 			if (!Directory.Exists(Main.SavePath))
 			{
@@ -66,7 +68,7 @@ namespace MusicBox.Utils
 				Path.DirectorySeparatorChar,
 				CONFIG_FILE_NAME
 			});
-			string json = JsonConvert.SerializeObject(MusicConfig, Formatting.Indented);
+			string json = JsonConvert.SerializeObject(config, Formatting.Indented);
 			File.WriteAllText(path, json);
 		}
 	}

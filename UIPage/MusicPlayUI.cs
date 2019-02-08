@@ -22,8 +22,8 @@ namespace MusicBox.UIPage
 
 		private MusicPlayer musicPlayer { get { return MusicBox.Instance.MusicPlayer;  } }
 
-		private long _playPosition;
-		private long _playLength;
+		private TimeSpan _playPosition;
+		private TimeSpan _playLength;
 
 		private Vector2 Center
 		{
@@ -47,10 +47,10 @@ namespace MusicBox.UIPage
 			WindowPanel.CornerSize = 12;
 		}
 
-		private void MusicPlayer_OnProgressUpdate(long pos, long length)
+		private void MusicPlayer_OnProgressUpdate(TimeSpan curPos, TimeSpan totalLen)
 		{
-			_playPosition = pos;
-			_playLength = length;
+			_playPosition = curPos;
+			_playLength = totalLen;
 		}
 
 		protected override void OnClose(UIMouseEvent evt, UIElement listeningElement)
@@ -66,13 +66,13 @@ namespace MusicBox.UIPage
 		private void DrawProgressBar(SpriteBatch sb)
 		{
 			Point barCenter = (Center + new Vector2(0, 100)).ToPoint();
-			double factor = _playPosition / (double)_playLength;
+			float factor = _playPosition.Ticks / (float)_playLength.Ticks;
 			if (double.IsNaN(factor))
 				factor = 0;
 			sb.Draw(Main.magicPixel, new Rectangle(barCenter.X - 203, barCenter.Y - 12, 406, 24), Color.Gray);
 			sb.Draw(Main.magicPixel, new Rectangle(barCenter.X - 200, barCenter.Y - 10, (int)(400 * factor), 20), Color.White);
 
-			string text = string.Format("{0:N2}%", factor);
+			string text = string.Format("{0}/{1}", _playPosition.ToString(@"mm\:ss"), _playLength.ToString(@"mm\:ss"));
 			Vector2 textSize = Main.fontMouseText.MeasureString(text);
 			Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, text,
 				barCenter.X - textSize.X * 0.5f, barCenter.Y + 6, Color.White, Color.Black, textSize * 0.5f);

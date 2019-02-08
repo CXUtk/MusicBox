@@ -48,7 +48,9 @@ namespace MusicBox
 		{
 			get;
 			set;
-		} 
+		}
+
+		public bool IsRunning { get; private set; }
 
 
 
@@ -95,6 +97,7 @@ namespace MusicBox
 		public override void Load()
 		{
 			Instance = this;
+			IsRunning = false;
 			if (!Main.dedServ)
 			{
 				HotKeyControl.RegisterKey();
@@ -105,24 +108,33 @@ namespace MusicBox
 		{
 			if (!Main.dedServ)
 			{
-				ConfigLoader.LoadCondig();
-				MusicPlayer = new MusicPlayer(ConfigLoader.MusicConfig.MusicPath);
+				SetNewMusicPlayer();
 				ResourceLoader.LoadAllTextures();
 				InitUI();
 			}
 
 		}
 
+		public void SetNewMusicPlayer()
+		{
+			ConfigLoader.LoadConfig();
+			MusicPlayer = new MusicPlayer(ConfigLoader.MusicConfig.MusicPath);
+			MusicPlayer.Volume = ConfigLoader.MusicConfig.Volume / 100f;
+			MusicPlayer.OnMusicEnd += (sender, args) => (sender as MusicPlayer).SwitchNextSong();
+			IsRunning = true;
+		}
+
 		public override void Unload()
 		{
 			MusicPlayer.Dispose();
 			MusicPlayer = null;
+			IsRunning = false;
 		}
 
 		public override void PreSaveAndQuit()
 		{
 			MusicPlayer.Stop();
-			ConfigLoader.SaveConfig();
+			ConfigLoader.SaveConfig(ConfigLoader.MusicConfig);
 		}
 	}
 

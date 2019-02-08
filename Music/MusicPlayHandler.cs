@@ -27,6 +27,17 @@ namespace MusicBox.Music
 		public Version Version { get; }
 		public List<string> SongNames { get; private set; }
 
+		private float volume;
+		public float Volume
+		{
+			get { return volume; }
+			set
+			{
+				volume = value;
+				outputDevice.Volume = volume;
+			}
+		}
+
 		public bool IsPaused { get; private set; }
 
 		private MusicPlayer()
@@ -81,7 +92,7 @@ namespace MusicBox.Music
 			while (outputDevice.PlaybackState == PlaybackState.Playing ||
 					outputDevice.PlaybackState == PlaybackState.Paused)
 			{
-				OnProgressUpdate(audioFile.Position, audioFile.Length);
+				OnProgressUpdate(audioFile.CurrentTime, audioFile.TotalTime);
 				Thread.Sleep(1000);
 			}
 			isMusicEnd = true;

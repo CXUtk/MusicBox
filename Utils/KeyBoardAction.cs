@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace FallenStar49
+namespace MusicBox.Utils
 {
     public struct KeyBoardAction
     {

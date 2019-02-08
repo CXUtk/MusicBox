@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace MusicBox.Music
 {
-	public delegate void UpdateProgressEventHandler(long pos, long length);
+	public delegate void UpdateProgressEventHandler(TimeSpan curPos, TimeSpan totalLen);
 }
