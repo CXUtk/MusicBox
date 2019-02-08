@@ -22,6 +22,11 @@ namespace MusicBox
 
 		public override void OnEnterWorld(Player player)
 		{
+			if (ConfigLoader.FirstTimeUse)
+			{
+				// 让玩家选择路径
+				MusicBox.Instance.MusicPlayer.ResetSrc(src);
+			}
 			base.OnEnterWorld(player);
 		}
 

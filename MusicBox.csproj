@@ -86,7 +86,7 @@
     <Compile Include="MusicBox.cs" />
     <Compile Include="MBWorld.cs" />
     <Compile Include="Music\MusicDelegate.cs" />
-    <Compile Include="Music\MusicPlayHandler.cs" />
+    <Compile Include="Music\MusicPlay.cs" />
     <Compile Include="Music\SampleAggregator.cs" />
     <Compile Include="UIPage\MusicPlayUI.cs" />
     <Compile Include="UI\AdvWindowUIState.cs" />

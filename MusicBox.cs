@@ -118,7 +118,7 @@ namespace MusicBox
 		public void SetNewMusicPlayer()
 		{
 			ConfigLoader.LoadConfig();
-			MusicPlayer = new MusicPlayer(ConfigLoader.MusicConfig.MusicPath);
+			MusicPlayer = new MusicPlayer();
 			MusicPlayer.Volume = ConfigLoader.MusicConfig.Volume / 100f;
 			MusicPlayer.OnMusicEnd += (sender, args) => (sender as MusicPlayer).SwitchNextSong();
 			IsRunning = true;
@@ -134,7 +134,7 @@ namespace MusicBox
 		public override void PreSaveAndQuit()
 		{
 			MusicPlayer.Stop();
-			ConfigLoader.SaveConfig(ConfigLoader.MusicConfig);
+			ConfigLoader.SaveConfig();
 		}
 	}
 

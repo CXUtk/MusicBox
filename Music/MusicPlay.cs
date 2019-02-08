@@ -40,7 +40,7 @@ namespace MusicBox.Music
 
 		public bool IsPaused { get; private set; }
 
-		private MusicPlayer()
+		public MusicPlayer()
 		{
 			Version = typeof(Program).Assembly.GetName().Version;
 			isMusicEnd = false;
@@ -52,11 +52,6 @@ namespace MusicBox.Music
 				Volume = 0.2f,
 				DesiredLatency = 200,
 			};
-		}
-
-		public MusicPlayer(string src) : this()
-		{
-			ResetSrc(src);
 		}
 
 		public void ResetSrc(string src)
