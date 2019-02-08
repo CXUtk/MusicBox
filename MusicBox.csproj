@@ -88,6 +88,7 @@
     <Compile Include="Music\MusicDelegate.cs" />
     <Compile Include="Music\MusicPlay.cs" />
     <Compile Include="Music\SampleAggregator.cs" />
+    <Compile Include="UIPage\MusicSettingUI.cs" />
     <Compile Include="UIPage\MusicPlayUI.cs" />
     <Compile Include="UI\AdvWindowUIState.cs" />
     <Compile Include="UI\CDInterfaceManager.cs" />
