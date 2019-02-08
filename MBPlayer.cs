@@ -24,8 +24,9 @@ namespace MusicBox
 		{
 			if (ConfigLoader.FirstTimeUse)
 			{
+				string src = ConfigLoader.MusicConfig.MusicPath;
 				// 让玩家选择路径
-				MusicBox.Instance.MusicPlayer.ResetSrc(src);
+				MusicBox.Instance.MusicPlayer.PlaySrc = src;
 			}
 			base.OnEnterWorld(player);
 		}

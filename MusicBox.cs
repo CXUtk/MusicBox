@@ -118,7 +118,14 @@ namespace MusicBox
 		public void SetNewMusicPlayer()
 		{
 			ConfigLoader.LoadConfig();
+			if (!Directory.Exists(ConfigLoader.MusicConfig.MusicPath))
+			{
+				IsRunning = false;
+				Main.NewText("Music folder not set.");
+				return;
+			}
 			MusicPlayer = new MusicPlayer();
+			MusicPlayer.PlaySrc = ConfigLoader.MusicConfig.MusicPath;
 			MusicPlayer.Volume = ConfigLoader.MusicConfig.Volume / 100f;
 			MusicPlayer.OnMusicEnd += (sender, args) => (sender as MusicPlayer).SwitchNextSong();
 			IsRunning = true;
