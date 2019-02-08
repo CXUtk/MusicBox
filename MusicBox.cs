@@ -23,8 +23,6 @@ namespace MusicBox
 	// MOD的主类名字，需要与文件名、MOD名完全一致，并且继承Mod类
 	public class MusicBox : Mod
 	{
-		public const string TEST_MUSIC_FOLDER = @"E:\CloudMusic";
-
 		public static MusicBox Instance;
 		/// <summary>
 		/// 存储所有在"Images/"下的图片
@@ -40,9 +38,9 @@ namespace MusicBox
 			set;
 		}
 
-		private CDInterfaceManager CDInterfaceManager;
+		private CDInterfaceManager InterfaceManager;
 
-		public MusicPlayHandler MusicPlayer { get; private set; }
+		public MusicPlayer MusicPlayer { get; private set; }
 
 		public ConditionalInterface musicUI;
 		
@@ -66,15 +64,15 @@ namespace MusicBox
 
 		private void InitUI()
 		{
-			CDInterfaceManager = new CDInterfaceManager();
+			InterfaceManager = new CDInterfaceManager();
 			musicUI = new ConditionalInterface(() => CanShowMusicPlayUI);
 			musicUI.SetState(new UIPage.MusicPlayUI());
-			CDInterfaceManager.Add(musicUI);
+			InterfaceManager.Add(musicUI);
 		}
 
 		public override void UpdateUI(GameTime gameTime)
 		{
-			CDInterfaceManager.Update(gameTime);
+			InterfaceManager.Update(gameTime);
 		}
 
 		public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -83,15 +81,10 @@ namespace MusicBox
 			if (MouseTextIndex != -1)
 			{
 				layers.Insert(MouseTextIndex, new LegacyGameInterfaceLayer(
-					"MusicBox: FFSUI",
+					"MusicBox: MusicPlayerUI",
 					delegate
 					{
-						CDInterfaceManager.Draw(Main.spriteBatch);
-						//if (CanShowDestruct)
-						//{
-						//	FFSDestructer.Update(Main._drawInterfaceGameTime);
-						//	FFSDestructer.CurrentState.Draw(Main.spriteBatch);
-						//}
+						InterfaceManager.Draw(Main.spriteBatch);
 						return true;
 					},
 					InterfaceScaleType.UI)
@@ -102,18 +95,22 @@ namespace MusicBox
 		public override void Load()
 		{
 			Instance = this;
-
 			if (!Main.dedServ)
 			{
-				ResourceLoader.LoadAllTextures();
-				InitUI();
 				HotKeyControl.RegisterKey();
 			}
 		}
 
 		public override void PostSetupContent()
 		{
-			MusicPlayer = new MusicPlayHandler(TEST_MUSIC_FOLDER);
+			if (!Main.dedServ)
+			{
+				ConfigLoader.LoadCondig();
+				MusicPlayer = new MusicPlayer(ConfigLoader.MusicConfig.MusicPath);
+				ResourceLoader.LoadAllTextures();
+				InitUI();
+			}
+
 		}
 
 		public override void Unload()
@@ -125,6 +122,7 @@ namespace MusicBox
 		public override void PreSaveAndQuit()
 		{
 			MusicPlayer.Stop();
+			ConfigLoader.SaveConfig();
 		}
 	}
 

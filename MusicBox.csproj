@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -6,8 +6,9 @@
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>ClassLibrary</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -17,6 +18,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -25,6 +27,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace>MusicBox</RootNamespace>
@@ -45,6 +48,9 @@
     </Reference>
     <Reference Include="NAudio">
       <HintPath>lib\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Libraries\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="ReLogic, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -75,9 +81,11 @@
     <Content Include="Libraries\Terraria.exe" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\MusicConfig.cs" />
     <Compile Include="MBPlayer.cs" />
     <Compile Include="MusicBox.cs" />
     <Compile Include="MBWorld.cs" />
+    <Compile Include="Music\MusicDelegate.cs" />
     <Compile Include="Music\MusicPlayHandler.cs" />
     <Compile Include="Music\SampleAggregator.cs" />
     <Compile Include="UIPage\MusicPlayUI.cs" />
@@ -93,6 +101,7 @@
     <Compile Include="UI\UITextButton.cs" />
     <Compile Include="UI\UIValueChanger.cs" />
     <Compile Include="UI\WindowUIState.cs" />
+    <Compile Include="Utils\ConfigLoader.cs" />
     <Compile Include="Utils\HotKeyControl.cs" />
     <Compile Include="Utils\KeyBoardAction.cs" />
     <Compile Include="Utils\ModHelper.cs" />

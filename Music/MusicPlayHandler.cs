@@ -9,7 +9,7 @@ using Terraria;
 
 namespace MusicBox.Music
 {
-	public class MusicPlayHandler
+	public class MusicPlayer
 	{
 		private bool isMusicEnd;
 		private bool isStopped;
@@ -20,6 +20,7 @@ namespace MusicBox.Music
 
 		public event EventHandler OnMusicEnd;
 		public event EventHandler<FftEventArgs> OnFFTCalculated;
+		public event UpdateProgressEventHandler OnProgressUpdate;
 
 		public string PlaySrc { get; private set; }
 
@@ -28,7 +29,7 @@ namespace MusicBox.Music
 
 		public bool IsPaused { get; private set; }
 
-		private MusicPlayHandler()
+		private MusicPlayer()
 		{
 			Version = typeof(Program).Assembly.GetName().Version;
 			isMusicEnd = false;
@@ -42,7 +43,7 @@ namespace MusicBox.Music
 			};
 		}
 
-		public MusicPlayHandler(string src) : this()
+		public MusicPlayer(string src) : this()
 		{
 			ResetSrc(src);
 		}
@@ -67,7 +68,6 @@ namespace MusicBox.Music
 			// 性能关键点，考虑用cache
 			// Dispose 不要乱用， 容易引发异常且未观测到任何性能提升
 			// audioFile.Dispose();
-			
 			audioFile = new AudioFileReader(SongNames[currentSong]);
 			SampleAggregator aggregator = new SampleAggregator(audioFile)
 			{
@@ -81,6 +81,7 @@ namespace MusicBox.Music
 			while (outputDevice.PlaybackState == PlaybackState.Playing ||
 					outputDevice.PlaybackState == PlaybackState.Paused)
 			{
+				OnProgressUpdate(audioFile.Position, audioFile.Length);
 				Thread.Sleep(1000);
 			}
 			isMusicEnd = true;
@@ -95,7 +96,6 @@ namespace MusicBox.Music
 
 		private void playNew()
 		{
-			Main.NewText("播放");
 			playSongThread = new Thread(playSong);
 			playSongThread.Start();
 			isMusicEnd = false;
