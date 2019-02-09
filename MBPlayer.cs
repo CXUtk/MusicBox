@@ -10,6 +10,8 @@ using MusicBox.Utils;
 using MusicBox.UI;
 using Terraria.GameInput;
 using Terraria;
+using System.Windows.Forms;
+using System.Threading;
 
 namespace MusicBox
 {
@@ -24,11 +26,33 @@ namespace MusicBox
 		{
 			if (ConfigLoader.FirstTimeUse)
 			{
+				DialogResult InvokeResult = DialogResult.None;
+				string selectedPath = string.Empty;
+				var InvokeThread = new Thread(new ThreadStart(() =>
+				{
+					var f2 = new Form() { TopMost = true, Visible = false };
+					FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+					{
+						Description = "请选择音乐文件夹"
+					};
+					InvokeResult = folderBrowserDialog.ShowDialog(f2);
+					if (InvokeResult == DialogResult.OK)
+					{
+						selectedPath = folderBrowserDialog.SelectedPath;
+					}
+				}));
+				InvokeThread.SetApartmentState(ApartmentState.STA);
+				InvokeThread.Start();
+				InvokeThread.Join();
 				// 让玩家选择路径
-				MusicBox.Instance.MusicPlayer.ResetSrc(src);
+				if (InvokeResult == DialogResult.OK)
+				{
+					MusicBox.Instance.MusicPlayer.ResetSrc(selectedPath);
+				}
 			}
 			base.OnEnterWorld(player);
 		}
+
 
 		public override void PostUpdate()
 		{

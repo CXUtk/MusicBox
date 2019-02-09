@@ -17,6 +17,8 @@ using Microsoft.Xna.Framework.Graphics;
 using MusicBox.Utils;
 using MusicBox.UI;
 using MusicBox.Music;
+using System.Windows.Forms;
+using System.Threading;
 
 namespace MusicBox
 {
@@ -114,14 +116,30 @@ namespace MusicBox
 			}
 
 		}
+		public class WindowHandle : System.Windows.Forms.IWin32Window
+		{
+			public WindowHandle(IntPtr handle)
+			{
+				_hwnd = handle;
+			}
 
+			public IntPtr Handle
+			{
+				get { return _hwnd; }
+			}
+
+			private IntPtr _hwnd;
+		}
 		public void SetNewMusicPlayer()
 		{
 			ConfigLoader.LoadConfig();
-			MusicPlayer = new MusicPlayer();
-			MusicPlayer.Volume = ConfigLoader.MusicConfig.Volume / 100f;
+			MusicPlayer = new MusicPlayer
+			{
+				Volume = ConfigLoader.MusicConfig.Volume / 100f
+			};
 			MusicPlayer.OnMusicEnd += (sender, args) => (sender as MusicPlayer).SwitchNextSong();
 			IsRunning = true;
+			
 		}
 
 		public override void Unload()
