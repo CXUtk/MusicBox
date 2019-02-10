@@ -17,6 +17,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MusicBox.Utils;
 using MusicBox.UI;
 using MusicBox.Music;
+using MusicBox.UIPage;
 
 namespace MusicBox
 {
@@ -24,6 +25,9 @@ namespace MusicBox
 	public class MusicBox : Mod
 	{
 		public static MusicBox Instance;
+
+		public static float NormalStringHeight;
+
 		/// <summary>
 		/// 存储所有在"Images/"下的图片
 		/// </summary>
@@ -43,6 +47,7 @@ namespace MusicBox
 		public MusicPlayer MusicPlayer { get; private set; }
 
 		public ConditionalInterface musicUI;
+		public ConditionalInterface floatingDisplayUI;
 		
 		public bool CanShowMusicPlayUI
 		{
@@ -67,9 +72,15 @@ namespace MusicBox
 		private void InitUI()
 		{
 			InterfaceManager = new CDInterfaceManager();
+
 			musicUI = new ConditionalInterface(() => CanShowMusicPlayUI);
-			musicUI.SetState(new UIPage.MusicPlayUI());
+			musicUI.SetState(new MusicPlayUI());
+
+			floatingDisplayUI = new ConditionalInterface(() => true);
+			floatingDisplayUI.SetState(new TransparentFloatingDisplayerUI());
+
 			InterfaceManager.Add(musicUI);
+			InterfaceManager.Add(floatingDisplayUI);
 		}
 
 		public override void UpdateUI(GameTime gameTime)
@@ -100,6 +111,7 @@ namespace MusicBox
 			IsRunning = false;
 			if (!Main.dedServ)
 			{
+				NormalStringHeight = Main.fontMouseText.MeasureString("hi").Y;
 				HotKeyControl.RegisterKey();
 			}
 		}

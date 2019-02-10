@@ -88,12 +88,14 @@
     <Compile Include="Music\MusicDelegate.cs" />
     <Compile Include="Music\MusicPlay.cs" />
     <Compile Include="Music\SampleAggregator.cs" />
+    <Compile Include="UIPage\TransparentFloatingDisplayerUI.cs" />
     <Compile Include="UIPage\MusicSettingUI.cs" />
     <Compile Include="UIPage\MusicPlayUI.cs" />
     <Compile Include="UI\AdvWindowUIState.cs" />
     <Compile Include="UI\CDInterfaceManager.cs" />
     <Compile Include="UI\ConditionalInterface.cs" />
     <Compile Include="UI\Drawing.cs" />
+    <Compile Include="UI\FloatingUIState.cs" />
     <Compile Include="UI\UIAdvPanel.cs" />
     <Compile Include="UI\UIAdvText.cs" />
     <Compile Include="UI\UIButton.cs" />
