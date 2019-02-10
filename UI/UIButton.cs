@@ -87,8 +87,6 @@ namespace MusicBox.UI
 			}
 			base.Update(gameTime);
 		}
-        int xi = 0;
-        int yi = 0;
 		protected override void DrawSelf(SpriteBatch sb)
 		{
 			CalculatedStyle innerDimension = GetInnerDimensions();
@@ -105,10 +103,9 @@ namespace MusicBox.UI
 			}
 			if (ButtonText != "")
 			{
-                if(ButtonText == "点击拆解") { xi = -1; yi = 5; }
 				Vector2 txtMeasure = Main.fontMouseText.MeasureString(ButtonText);
 				Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, ButtonText,
-					innerDimension.Center().X - txtMeasure.X / 2 + xi, innerDimension.Center().Y - txtMeasure.Y / 2 + yi,
+					innerDimension.Center().X - txtMeasure.X / 2, innerDimension.Center().Y - txtMeasure.Y / 2,
 					ButtonTextColor,
 					Color.Black, Vector2.Zero);
 			}

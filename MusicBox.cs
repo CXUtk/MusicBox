@@ -116,20 +116,7 @@ namespace MusicBox
 			}
 
 		}
-		public class WindowHandle : System.Windows.Forms.IWin32Window
-		{
-			public WindowHandle(IntPtr handle)
-			{
-				_hwnd = handle;
-			}
 
-			public IntPtr Handle
-			{
-				get { return _hwnd; }
-			}
-
-			private IntPtr _hwnd;
-		}
 		public void SetNewMusicPlayer()
 		{
 			ConfigLoader.LoadConfig();
@@ -138,14 +125,18 @@ namespace MusicBox
 				Volume = ConfigLoader.MusicConfig.Volume / 100f
 			};
 			MusicPlayer.OnMusicEnd += (sender, args) => (sender as MusicPlayer).SwitchNextSong();
+			if (!ConfigLoader.FirstTimeUse)
+			{
+				MusicPlayer.ResetSrc(ConfigLoader.MusicConfig.MusicPath);
+			}
 			IsRunning = true;
 			
 		}
 
 		public override void Unload()
 		{
+			// MessageBox.Show("Unload");
 			MusicPlayer.Dispose();
-			MusicPlayer = null;
 			IsRunning = false;
 		}
 

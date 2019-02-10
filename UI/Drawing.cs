@@ -56,7 +56,11 @@ namespace MusicBox.UI
             Box2 = null;
 			Bar1 = null;
         }
-        public static void DrawAdvBox(SpriteBatch sp, int x, int y, int w, int h, Color c, Texture2D img, Vector2 size4)
+		public static void DrawAdvBox(SpriteBatch sp, Rectangle rect, Color c, Texture2D img, Vector2 size4)
+		{
+			DrawAdvBox(sp, rect.X, rect.Y, rect.Width, rect.Height, c, img, size4);
+		}
+		public static void DrawAdvBox(SpriteBatch sp, int x, int y, int w, int h, Color c, Texture2D img, Vector2 size4)
         {
             Texture2D box = img;
             int width = (int)size4.X;

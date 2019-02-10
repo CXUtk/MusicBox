@@ -14,8 +14,7 @@ namespace MusicBox.Config
 
 		public MusicConfig()
 		{
-			Volume = 30;
-			MusicPath = @"D:\CloudMusic";
+			Volume = 10;
 		}
 	}
 }

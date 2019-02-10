@@ -7,6 +7,7 @@ using MusicBox.Config;
 using System.IO;
 using Newtonsoft.Json;
 using Terraria;
+using System.Windows.Forms;
 
 namespace MusicBox.Utils
 {
@@ -51,8 +52,6 @@ namespace MusicBox.Utils
 			else
 			{
 				FirstTimeUse = true;
-				MusicConfig = new MusicConfig();
-				SaveConfig();
 			}
 		}
 

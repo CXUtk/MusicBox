@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using NAudio.Wave;
 using Terraria;
+using System.Windows.Forms;
 
 namespace MusicBox.Music
 {
@@ -67,19 +68,10 @@ namespace MusicBox.Music
 			audioFile = null;
 		}
 
-		[Obsolete]
-		public void Run()
-		{
-			// 前置操作
-
-			Play();
-		}
-
 		private void playSong()
 		{
 			// 性能关键点，考虑用cache
 			// Dispose 不要乱用， 容易引发异常且未观测到任何性能提升
-			// audioFile.Dispose();
 			audioFile = new AudioFileReader(SongNames[CurrentSong]);
 			SampleAggregator aggregator = new SampleAggregator(audioFile)
 			{
@@ -108,6 +100,7 @@ namespace MusicBox.Music
 
 		private void playNew()
 		{
+
 			playSongThread = new Thread(playSong);
 			playSongThread.Start();
 			isMusicEnd = false;
@@ -184,6 +177,7 @@ namespace MusicBox.Music
 
 		public void Dispose()
 		{
+			Stop();
 			outputDevice?.Dispose();
 			audioFile?.Dispose();
 			playSongThread?.Abort();
