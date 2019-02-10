@@ -13,7 +13,6 @@ namespace MusicBox.Music
 	{
 		private bool isMusicEnd;
 		private bool isStopped;
-		private int currentSong;
 		private Thread playSongThread;
 		private IWavePlayer outputDevice;
 		private AudioFileReader audioFile;      // 暂时使用AudioFileReader
@@ -22,10 +21,16 @@ namespace MusicBox.Music
 		public event EventHandler<FftEventArgs> OnFFTCalculated;
 		public event UpdateProgressEventHandler OnProgressUpdate;
 
-		public string PlaySrc { get; private set; }
+		private string playSrc;
+		public string PlaySrc
+		{
+			get { return playSrc; }
+			set { ResetSrc(value); }
+		}
 
 		public Version Version { get; }
 		public List<string> SongNames { get; private set; }
+		public int CurrentSong { get; private set; }
 
 		private float volume;
 		public float Volume
@@ -46,7 +51,7 @@ namespace MusicBox.Music
 			isMusicEnd = false;
 			isStopped = true;
 			IsPaused = false;
-			currentSong = 0;
+			CurrentSong = 0;
 			outputDevice = new WaveOutEvent
 			{
 				Volume = 0.2f,
@@ -57,11 +62,12 @@ namespace MusicBox.Music
 		public void ResetSrc(string src)
 		{
 			Stop();
-			PlaySrc = src;
+			playSrc = src;
 			SongNames = new List<string>(Directory.EnumerateFiles(src));
 			audioFile = null;
 		}
 
+		[Obsolete]
 		public void Run()
 		{
 			// 前置操作
@@ -74,7 +80,7 @@ namespace MusicBox.Music
 			// 性能关键点，考虑用cache
 			// Dispose 不要乱用， 容易引发异常且未观测到任何性能提升
 			// audioFile.Dispose();
-			audioFile = new AudioFileReader(SongNames[currentSong]);
+			audioFile = new AudioFileReader(SongNames[CurrentSong]);
 			SampleAggregator aggregator = new SampleAggregator(audioFile)
 			{
 				NotificationCount = audioFile.WaveFormat.SampleRate / 10000,
@@ -125,7 +131,7 @@ namespace MusicBox.Music
 				playSongThread.Abort();
 				isMusicEnd = true;
 			}
-			currentSong = (currentSong + 1) % SongNames.Count;
+			CurrentSong = (CurrentSong + 1) % SongNames.Count;
 			playNew();
 		}
 
@@ -135,9 +141,9 @@ namespace MusicBox.Music
 		public void SwitchPrevSong()
 		{
 			playSongThread.Abort();
-			currentSong--;
-			if (currentSong < 0)
-				currentSong += SongNames.Count;
+			CurrentSong--;
+			if (CurrentSong < 0)
+				CurrentSong += SongNames.Count;
 			playNew();
 		}
 
