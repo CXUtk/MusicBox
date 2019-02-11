@@ -145,9 +145,10 @@ namespace MusicBox.UIPage
 			Vector2 start = Center - new Vector2(UI_PANEL_WIDTH / 2 - 80, UI_PANEL_HEIGHT / 2 - 80);
 			Vector2 offset = Vector2.Zero;
 			Vector2 textSize = Main.fontMouseText.MeasureString("hi");
-			for (int i = musicPlayer.CurrentSong; i < 6; i++)
+			int current = musicPlayer.CurrentSong;
+			for (int i = 1; i < 6; i++)
 			{
-				string text = string.Format("{0}: {1}", i + 1, Path.GetFileNameWithoutExtension(musicPlayer.SongNames[i % musicPlayer.SongNames.Count]));
+				string text = string.Format("{0}: {1}", i, Path.GetFileNameWithoutExtension(musicPlayer.SongNames[(current + i - 1) % musicPlayer.SongNames.Count]));
 				Vector2 pos = start + offset;
 				Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, text, pos.X, pos.Y, Color.White, Color.Black, textSize * 0.5f);
 				offset += new Vector2(0f, textSize.Y + 2f);

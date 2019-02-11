@@ -12,6 +12,7 @@ namespace MusicBox.Music
 {
 	public class MusicPlayer
 	{
+		private bool isError;
 		private bool isMusicEnd;
 		private bool isStopped;
 		private Thread playSongThread;
@@ -41,6 +42,16 @@ namespace MusicBox.Music
 			{
 				volume = value;
 				outputDevice.Volume = volume;
+			}
+		}
+
+		public string NowPlaying
+		{
+			get
+			{
+				if (isStopped)
+					return "None";
+				return Path.GetFileNameWithoutExtension(SongNames[CurrentSong]);
 			}
 		}
 
