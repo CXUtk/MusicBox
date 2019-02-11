@@ -12,7 +12,6 @@ namespace MusicBox.Music
 {
 	public class MusicPlayer
 	{
-		private bool isError;
 		private bool isMusicEnd;
 		private bool isStopped;
 		private Thread playSongThread;
@@ -194,6 +193,36 @@ namespace MusicBox.Music
 		{
 			IsPaused = true;
 			outputDevice.Pause();
+		}
+
+		/// <summary>
+		/// Sets the time for the current song. Time must be valid.
+		/// </summary>
+		/// <param name="time">The time to set</param>
+		/// <returns>If success.</returns>
+		public bool SetTime(TimeSpan time)
+		{
+			if (isStopped) return false;
+			if (playSongThread == null || audioFile == null)
+				return false;
+			if (time > audioFile.TotalTime) return false;
+			double percent = time.TotalMilliseconds / audioFile.TotalTime.TotalMilliseconds;
+			return SetTime(percent);
+		}
+
+		/// <summary>
+		/// Sets the time for the current song. Percentage must be between 0 and 1.
+		/// </summary>
+		/// <param name="percent"></param>
+		/// <returns></returns>
+		public bool SetTime(double percent)
+		{
+			if (isStopped) return false;
+			if (playSongThread == null || audioFile == null)
+				return false;
+			if (percent > 1 || percent < 0) return false;
+			audioFile.Position = (long)(percent * (audioFile.Length - 1));
+			return true;
 		}
 
 		public void Dispose()

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace MusicBox
@@ -94,6 +96,38 @@ namespace MusicBox
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
 			MusicBox.Instance.MusicPlayer.PlayRandom();
+		}
+	}
+
+	public class SetTimeCommand : CommandTemplate
+	{
+		public SetTimeCommand()
+		{
+			name = "mbset";
+			argstr = "";
+			desc = "SET SONG TIME (use percentage such as 0.15)";
+		}
+
+		public override void Action(CommandCaller caller, string input, string[] args)
+		{
+			if (args.Length != 1)
+			{
+				Main.NewText("Wrong arguments.", Color.Red);
+				return;
+			}
+
+			double p = 0.0;
+			try
+			{
+				p = double.Parse(args[0]);
+			}
+			catch
+			{
+				Main.NewText("Use percentage such as 0.15");
+				return;
+			}
+
+			MusicBox.Instance.MusicPlayer.SetTime(p);
 		}
 	}
 

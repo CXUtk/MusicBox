@@ -88,10 +88,10 @@ namespace MusicBox.UIPage
 					}
 				}
 			}
-			
-			width = MathHelper.Max(Main.fontMouseText.MeasureString(text).X, MIN_WIDTH);
-			WindowPanel.Width.Set(width, 0f);
+
 			Vector2 textSize = Main.fontMouseText.MeasureString(text);
+			width = MathHelper.Max(textSize.X, MIN_WIDTH);
+			WindowPanel.Width.Set(width, 0f);
 			float placeX = TopLeft.X + titlePadding.X + textSize.X;
 			float placeY = TopLeft.Y + titlePadding.Y + textSize.Y;
 			Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, text, placeX, placeY,
