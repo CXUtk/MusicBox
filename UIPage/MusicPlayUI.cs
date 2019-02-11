@@ -148,7 +148,7 @@ namespace MusicBox.UIPage
 			int current = musicPlayer.CurrentSong;
 			for (int i = 1; i < 6; i++)
 			{
-				string text = string.Format("{0}: {1}", i, Path.GetFileNameWithoutExtension(musicPlayer.SongNames[(current + i - 1) % musicPlayer.SongNames.Count]));
+				string text = string.Format("{0}: {1}", i, Path.GetFileNameWithoutExtension(musicPlayer.SongFiles[(current + i - 1) % musicPlayer.SongFiles.Count]));
 				Vector2 pos = start + offset;
 				Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, text, pos.X, pos.Y, Color.White, Color.Black, textSize * 0.5f);
 				offset += new Vector2(0f, textSize.Y + 2f);
