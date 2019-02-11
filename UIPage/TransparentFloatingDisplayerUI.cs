@@ -15,9 +15,10 @@ namespace MusicBox.UIPage
 	public class TransparentFloatingDisplayerUI : FloatingUIState
 	{
 		private const float MIN_WIDTH = 140f;
+		private const float DEFAULT_HEIGHT = 140f;
 
-		private float width = 230f;
-		private float height = 40f;
+		private float width = MIN_WIDTH;
+		private float height = DEFAULT_HEIGHT;
 
 		private float speed = 2f;
 		private Vector2 titlePadding;
@@ -40,7 +41,7 @@ namespace MusicBox.UIPage
 			height = MusicBox.NormalStringHeight * 2 + 40f;
 			titlePadding = new Vector2(10f, 10f);
 			progressPadding = titlePadding + new Vector2(0f, MusicBox.NormalStringHeight + 7f);
-//			WindowPanel.MainTexture = MusicBox.ModTexturesTable["AdvInvBack1"];
+			width = MathHelper.Max(Main.fontMouseText.MeasureString(musicPlayer.NowPlaying).X, MIN_WIDTH);
 			WindowPanel.SetPadding(0);
 			WindowPanel.Left.Set(20f, 0f);
 			WindowPanel.Top.Set(80f, 0f);
@@ -61,22 +62,39 @@ namespace MusicBox.UIPage
 			base.DrawChildren(sb);
 			DrawTitle(sb);
 			DrawTime(sb);
-			UpdateWidth();
-		}
-
-		private void UpdateWidth()
-		{
-			width = Main.fontMouseText.MeasureString(musicPlayer.NowPlaying).X;
-			WindowPanel.Width.Set(MathHelper.Max(width, MIN_WIDTH), 0f);
 		}
 
 		private void DrawTitle(SpriteBatch sb)
 		{
-			string title = musicPlayer.NowPlaying;
-			Vector2 textSize = Main.fontMouseText.MeasureString(title);
+			TagLib.Tag title = musicPlayer.GetCurrentSongDescription();
+			string text;
+			if (title == null)
+			{
+				text = "Stopped";
+			}
+			else
+			{
+				text = title.Title;
+				if (title.Performers.Length != 0)
+				{
+					text += " - ";
+					for (int i = 0; i < title.Performers.Length; i++)
+					{
+						text += title.Performers[i];
+						if (i != title.Performers.Length - 1)
+						{
+							text += ", ";
+						}
+					}
+				}
+			}
+			
+			width = MathHelper.Max(Main.fontMouseText.MeasureString(text).X, MIN_WIDTH);
+			WindowPanel.Width.Set(width, 0f);
+			Vector2 textSize = Main.fontMouseText.MeasureString(text);
 			float placeX = TopLeft.X + titlePadding.X + textSize.X;
 			float placeY = TopLeft.Y + titlePadding.Y + textSize.Y;
-			Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, title, placeX, placeY,
+			Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, text, placeX, placeY,
 				Color.White, Color.Black, textSize);	// TODO: if too long, start rolling.
 		}
 

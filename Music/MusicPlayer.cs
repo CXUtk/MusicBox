@@ -18,6 +18,7 @@ namespace MusicBox.Music
 		private Thread playSongThread;
 		private IWavePlayer outputDevice;
 		private AudioFileReader audioFile;      // 暂时使用AudioFileReader
+		private TagLib.Tag currentSongFileDescriptor;
 
 		public event EventHandler OnMusicEnd;
 		public event EventHandler<FftEventArgs> OnFFTCalculated;
@@ -49,8 +50,6 @@ namespace MusicBox.Music
 		{
 			get
 			{
-				if (isStopped)
-					return "None";
 				return Path.GetFileNameWithoutExtension(SongFiles[CurrentSong]);
 			}
 		}
@@ -83,6 +82,10 @@ namespace MusicBox.Music
 		{
 			// 性能关键点，考虑用cache
 			// Dispose 不要乱用， 容易引发异常且未观测到任何性能提升
+			TagLib.File songFile = TagLib.File.Create(SongFiles[CurrentSong]);
+			currentSongFileDescriptor = songFile.Tag;
+			songFile.Dispose();
+			
 			audioFile = new AudioFileReader(SongFiles[CurrentSong]);
 			SampleAggregator aggregator = new SampleAggregator(audioFile)
 			{
@@ -111,7 +114,6 @@ namespace MusicBox.Music
 
 		private void playNew()
 		{
-
 			playSongThread = new Thread(playSong);
 			playSongThread.Start();
 			isMusicEnd = false;
@@ -161,6 +163,7 @@ namespace MusicBox.Music
 			outputDevice.Stop();
 			playSongThread.Abort();
 			playSongThread = null;
+			currentSongFileDescriptor = null;
 			isStopped = true;
 		}
 
@@ -180,6 +183,13 @@ namespace MusicBox.Music
 			}
 		}
 
+		public void PlayRandom()
+		{
+			playSongThread.Abort();
+			CurrentSong = Main.rand.Next(0, SongFiles.Count);
+			playNew();
+		}
+
 		public void Pause()
 		{
 			IsPaused = true;
@@ -196,6 +206,17 @@ namespace MusicBox.Music
 			outputDevice = null;
 			audioFile = null;
 			isStopped = true;
+		}
+
+		/// <summary>
+		/// Gets the tag of the song (with all information)
+		/// </summary>
+		/// <returns>The metadata of the song</returns>
+		public TagLib.Tag GetCurrentSongDescription()
+		{
+			if (isStopped || currentSongFileDescriptor == null)
+				return null;
+			return currentSongFileDescriptor;
 		}
 	}
 }
