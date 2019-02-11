@@ -62,6 +62,14 @@ namespace MusicBox.UI
 			set;
 		}
 
+		public Vector2 ValueCenter
+		{
+			get
+			{
+				return GetInnerDimensions().Position() + FillerDrawOffset + new Vector2(FillerSize.X * Value, FillerSize.Y * 0.5f);
+			}
+		}
+
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);

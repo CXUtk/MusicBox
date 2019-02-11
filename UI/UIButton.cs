@@ -45,7 +45,11 @@ namespace MusicBox.UI
 
 		private Color _currentColor;
 
-        public UIButton(Texture2D texture, bool withBox = true)
+		public new event UIElement.MouseEvent OnClick;
+		public new event UIElement.MouseEvent OnMouseDown;
+		public new event UIElement.MouseEvent OnMouseUp;
+
+		public UIButton(Texture2D texture, bool withBox = true)
         {
 			Texture = texture;
 			_alpha = 0f;
@@ -63,6 +67,20 @@ namespace MusicBox.UI
 		{
 			Main.PlaySound(12, -1, -1, 1, 1f, 0f);
 			base.MouseOver(evt);
+		}
+
+		public override void MouseDown(UIMouseEvent evt)
+		{
+			OnMouseDown?.Invoke(evt, this);
+		}
+		public override void Click(UIMouseEvent evt)
+		{
+			OnClick?.Invoke(evt, this);
+		}
+
+		public override void MouseUp(UIMouseEvent evt)
+		{
+			OnMouseUp?.Invoke(evt, this);
 		}
 
 

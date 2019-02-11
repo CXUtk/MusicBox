@@ -28,6 +28,9 @@ namespace MusicBox.UIPage
 
 		private UIBar _progressBar;
 		private UIPicButton _playButton;
+		private UIPicButton _forwardButton;
+		private UIPicButton _backwardButton;
+		private UISliderH _playSlider;
 
 		private TimeSpan _playPosition;
 		private TimeSpan _playLength;
@@ -54,6 +57,7 @@ namespace MusicBox.UIPage
 			WindowPanel.CornerSize = 12;
 
 			_progressBar = new UIBar();
+			_progressBar.SetPadding(0);
 			_progressBar.Top.Set(100f, 0.5f);
 			_progressBar.Left.Set(-UI_BAR_WIDTH / 2, 0.5f);
 			_progressBar.Width.Set(UI_BAR_WIDTH, 0f);
@@ -66,7 +70,7 @@ namespace MusicBox.UIPage
 			WindowPanel.Append(_progressBar);
 
 			_playButton = new UIPicButton();
-			_playButton.Texture = MusicBox.ModTexturesTable["PlayButton"];
+			_playButton.Texture = MusicBox.ModTexturesTable["PlayButtonN"];
 			_playButton.Top.Set(135f - 15f, 0.5f);
 			_playButton.Left.Set(-15, 0.5f);
 			_playButton.Width.Set(30, 0f);
@@ -75,6 +79,72 @@ namespace MusicBox.UIPage
 			_playButton.OnMouseOut += _playButton_OnMouseOut;
 			_playButton.OnClick += _playButton_OnClick;
 			WindowPanel.Append(_playButton);
+
+			_playSlider = new UISliderH();
+			_playSlider.Texture = MusicBox.ModTexturesTable["PlaySlider"];
+			_playSlider.Top.Set(0, 0f);
+			_playSlider.Left.Set(0, 0f);
+			_playSlider.Width.Set(30, 0f);
+			_playSlider.Height.Set(30, 0f);
+			_playSlider.StartX = -6f;
+			_playSlider.Scale = 1.6f;
+			_playSlider.EndX = UI_BAR_WIDTH - 24f;
+			_progressBar.Append(_playSlider);
+
+
+			_forwardButton = new UIPicButton();
+			_forwardButton.Texture = MusicBox.ModTexturesTable["ForwardButtonN"];
+			_forwardButton.Top.Set(135f - 15f, 0.5f);
+			_forwardButton.Left.Set(30f, 0.5f);
+			_forwardButton.Width.Set(30, 0f);
+			_forwardButton.Height.Set(30, 0f);
+			_forwardButton.OnMouseHover += _forwardButton_OnMouseHover;
+			_forwardButton.OnMouseOut += _forwardButton_OnMouseOut;
+			_forwardButton.OnClick += _forwardButton_OnClick;
+			WindowPanel.Append(_forwardButton);
+
+
+			_backwardButton = new UIPicButton();
+			_backwardButton.Texture = MusicBox.ModTexturesTable["BackwardButtonN"];
+			_backwardButton.Top.Set(135f - 15f, 0.5f);
+			_backwardButton.Left.Set(-60f, 0.5f);
+			_backwardButton.Width.Set(30, 0f);
+			_backwardButton.Height.Set(30, 0f);
+			_backwardButton.OnMouseHover += _backwardButton_OnMouseHover;
+			_backwardButton.OnMouseOut += _backwardButton_OnMouseOut;
+			_backwardButton.OnClick += _backwardButton_OnClick;
+			WindowPanel.Append(_backwardButton);
+
+		}
+
+		private void _backwardButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
+		{
+			musicPlayer.SwitchPrevSong();
+		}
+
+		private void _backwardButton_OnMouseOut(UIMouseEvent evt, UIElement listeningElement)
+		{
+			_backwardButton.Texture = MusicBox.ModTexturesTable["BackwardButtonN"];
+		}
+
+		private void _backwardButton_OnMouseHover(UIElement target, Vector2 mousePosition)
+		{
+			_backwardButton.Texture = MusicBox.ModTexturesTable["BackwardButton"];
+		}
+
+		private void _forwardButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
+		{
+			musicPlayer.SwitchNextSong();
+		}
+
+		private void _forwardButton_OnMouseOut(UIMouseEvent evt, UIElement listeningElement)
+		{
+			_forwardButton.Texture = MusicBox.ModTexturesTable["ForwardButtonN"];
+		}
+
+		private void _forwardButton_OnMouseHover(UIElement target, Vector2 mousePosition)
+		{
+			_forwardButton.Texture = MusicBox.ModTexturesTable["ForwardButton"];
 		}
 
 		private void _playButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
@@ -82,10 +152,12 @@ namespace MusicBox.UIPage
 			if (musicPlayer.IsPaused)
 			{
 				musicPlayer.Play();
+				_playButton.Texture = MusicBox.ModTexturesTable["PauseButton"];
 			}
 			else
 			{
 				musicPlayer.Pause();
+				_playButton.Texture = MusicBox.ModTexturesTable["PlayButton"];
 			}
 		}
 
@@ -138,6 +210,8 @@ namespace MusicBox.UIPage
 			Vector2 textSize = Main.fontMouseText.MeasureString(text);
 			Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, text,
 				barCenter.X, barCenter.Y - 12, Color.White, Color.Black, textSize * 0.5f);
+			//var texSlider = MusicBox.ModTexturesTable["PlaySlider"];
+			//sb.Draw(texSlider, _progressBar.ValueCenter, null, Color.White, 0, texSlider.Size() * 0.5f, 1.5f, SpriteEffects.None, 0f);
 		}
 
 		private void DrawSongList(SpriteBatch sb)
@@ -162,6 +236,7 @@ namespace MusicBox.UIPage
 			if (double.IsNaN(factor))
 				factor = 0;
 			_progressBar.Value = factor;
+			_playSlider.Value = factor;
 		}
 
 	}

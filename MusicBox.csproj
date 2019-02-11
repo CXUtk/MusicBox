@@ -76,6 +76,7 @@
     <Content Include="Images\Box.png" />
     <Content Include="Images\Box2.png" />
     <Content Include="Images\CloseButton.png" />
+    <Content Include="Images\PlaySlider.png" />
     <Content Include="Images\关闭键（未选中）.png" />
     <Content Include="Images\关闭键（选中）.png" />
     <Content Include="Images\前进键（未选中）.png" />
@@ -122,7 +123,7 @@
     <Compile Include="UI\UIButton.cs" />
     <Compile Include="UI\UIBar.cs" />
     <Compile Include="UI\UIPicButton.cs" />
-    <Compile Include="UI\UISlider.cs" />
+    <Compile Include="UI\UISliderH.cs" />
     <Compile Include="UI\UISlot.cs" />
     <Compile Include="UI\UITextButton.cs" />
     <Compile Include="UI\UIValueChanger.cs" />
