@@ -61,7 +61,7 @@ namespace MusicBox.Music
 			Version = typeof(Program).Assembly.GetName().Version;
 			isMusicEnd = false;
 			isStopped = true;
-			IsPaused = false;
+			IsPaused = true;
 			CurrentSong = 0;
 			outputDevice = new WaveOutEvent
 			{

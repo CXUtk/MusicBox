@@ -44,5 +44,6 @@ namespace MusicBox.UI
 		{
 			this.DrawPanel(spriteBatch, MainTexture, Color);
 		}
+
 	}
 }

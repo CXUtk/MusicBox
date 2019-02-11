@@ -38,9 +38,9 @@ namespace MusicBox.UI
 		public sealed override void OnInitialize()
 		{
 			WindowPanel = new UIAdvPanel();
-			WindowPanel.OnMouseDown += new MouseEvent(DragStart);
+			//WindowPanel.OnMouseDown += new MouseEvent(DragStart);
 			WindowPanel.OnMouseOver += new MouseEvent(Dragging);
-			WindowPanel.OnMouseUp += new MouseEvent(DragEnd);
+			//WindowPanel.OnMouseUp += new MouseEvent(DragEnd);
 			Initialize(WindowPanel);
 			Texture2D closeTex = MusicBox.ModTexturesTable["CloseButton"];
 			close = new UIButton(closeTex, false);
@@ -52,11 +52,8 @@ namespace MusicBox.UI
 			close.ButtonChangeColor = Color.Red;
 			close.OnClick += Close_OnClick;
 			WindowPanel.Append(close);
-
-
 			this.Append(WindowPanel);
 		}
-
 
 		private void Dragging(UIMouseEvent evt, UIElement listeningElement)
 		{
@@ -87,14 +84,17 @@ namespace MusicBox.UI
 		{
 			OnClose(evt, listeningElement);
 		}
-
-		private void DragStart(UIMouseEvent evt, UIElement listeningElement)
+		public override void MouseDown(UIMouseEvent evt)
 		{
 			_offset = new Vector2(evt.MousePosition.X - WindowPanel.Left.Pixels, evt.MousePosition.Y - WindowPanel.Top.Pixels);
 			_dragging = true;
+			//Main.NewText(listeningElement);
 		}
+		//private void DragStart(UIMouseEvent evt, UIElement listeningElement)
+		//{
 
-		private void DragEnd(UIMouseEvent evt, UIElement listeningElement)
+		//}
+		public override void MouseUp(UIMouseEvent evt)
 		{
 			Vector2 end = evt.MousePosition;
 			_dragging = false;
@@ -102,5 +102,10 @@ namespace MusicBox.UI
 			WindowPanel.Top.Set(end.Y - _offset.Y, 0f);
 			Recalculate();
 		}
+
+		//private void DragEnd(UIMouseEvent evt, UIElement listeningElement)
+		//{
+
+		//}
 	}
 }
