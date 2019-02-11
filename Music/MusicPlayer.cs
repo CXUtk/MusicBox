@@ -31,7 +31,7 @@ namespace MusicBox.Music
 		}
 
 		public Version Version { get; }
-		public List<string> SongNames { get; private set; }
+		public List<string> SongFiles { get; private set; }
 		public int CurrentSong { get; private set; }
 
 		private float volume;
@@ -51,7 +51,7 @@ namespace MusicBox.Music
 			{
 				if (isStopped)
 					return "None";
-				return Path.GetFileNameWithoutExtension(SongNames[CurrentSong]);
+				return Path.GetFileNameWithoutExtension(SongFiles[CurrentSong]);
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace MusicBox.Music
 		{
 			Stop();
 			playSrc = src;
-			SongNames = new List<string>(Directory.EnumerateFiles(src));
+			SongFiles = new List<string>(Directory.EnumerateFiles(src));
 			audioFile = null;
 		}
 
@@ -83,7 +83,7 @@ namespace MusicBox.Music
 		{
 			// 性能关键点，考虑用cache
 			// Dispose 不要乱用， 容易引发异常且未观测到任何性能提升
-			audioFile = new AudioFileReader(SongNames[CurrentSong]);
+			audioFile = new AudioFileReader(SongFiles[CurrentSong]);
 			SampleAggregator aggregator = new SampleAggregator(audioFile)
 			{
 				NotificationCount = audioFile.WaveFormat.SampleRate / 10000,
@@ -135,7 +135,7 @@ namespace MusicBox.Music
 				playSongThread.Abort();
 				isMusicEnd = true;
 			}
-			CurrentSong = (CurrentSong + 1) % SongNames.Count;
+			CurrentSong = (CurrentSong + 1) % SongFiles.Count;
 			playNew();
 		}
 
@@ -147,7 +147,7 @@ namespace MusicBox.Music
 			playSongThread.Abort();
 			CurrentSong--;
 			if (CurrentSong < 0)
-				CurrentSong += SongNames.Count;
+				CurrentSong += SongFiles.Count;
 			playNew();
 		}
 
