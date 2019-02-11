@@ -12,10 +12,11 @@ using Terraria;
 
 namespace MusicBox.UIPage
 {
-	// TODO: What's wrong with this ui??? I don't get this
 	public class TransparentFloatingDisplayerUI : FloatingUIState
 	{
-		private float width = 200f;
+		private const float MIN_WIDTH = 140f;
+
+		private float width = 230f;
 		private float height = 40f;
 
 		private float speed = 2f;
@@ -24,9 +25,9 @@ namespace MusicBox.UIPage
 
 		private MusicPlayer musicPlayer { get { return MusicBox.Instance.MusicPlayer; } }
 
-		private Vector2 Center
+		private Vector2 TopLeft
 		{
-			get { return WindowPanel.GetDimensions().Center(); }
+			get { return WindowPanel.GetDimensions().Center() - new Vector2(width / 2, height / 2); }
 		}
 
 		private TimeSpan playPosition;
@@ -36,13 +37,13 @@ namespace MusicBox.UIPage
 		{
 			musicPlayer.OnProgressUpdate += MusicPlayer_OnProgressUpdate;
 			base.Initialize(WindowPanel);
-			height = MusicBox.NormalStringHeight * 2 + 20f;
-			titlePadding = new Vector2(5f, 5f);
-			progressPadding = titlePadding + new Vector2(0f, MusicBox.NormalStringHeight + 5f);
-			WindowPanel.MainTexture = MusicBox.ModTexturesTable["AdvInvBack1"];	//TODO: DELETE THIS
+			height = MusicBox.NormalStringHeight * 2 + 40f;
+			titlePadding = new Vector2(10f, 10f);
+			progressPadding = titlePadding + new Vector2(0f, MusicBox.NormalStringHeight + 7f);
+//			WindowPanel.MainTexture = MusicBox.ModTexturesTable["AdvInvBack1"];
 			WindowPanel.SetPadding(0);
-			WindowPanel.Left.Set(10f, 0f);
-			WindowPanel.Top.Set(10f, 0f);
+			WindowPanel.Left.Set(20f, 0f);
+			WindowPanel.Top.Set(80f, 0f);
 			WindowPanel.Width.Set(width, 0f);
 			WindowPanel.Height.Set(height, 0f);
 			WindowPanel.Color = Color.Transparent;
@@ -60,33 +61,33 @@ namespace MusicBox.UIPage
 			base.DrawChildren(sb);
 			DrawTitle(sb);
 			DrawTime(sb);
+			UpdateWidth();
+		}
+
+		private void UpdateWidth()
+		{
+			width = Main.fontMouseText.MeasureString(musicPlayer.NowPlaying).X;
+			WindowPanel.Width.Set(MathHelper.Max(width, MIN_WIDTH), 0f);
 		}
 
 		private void DrawTitle(SpriteBatch sb)
 		{
-			string title = Path.GetFileNameWithoutExtension(musicPlayer.SongNames[musicPlayer.CurrentSong]);
+			string title = musicPlayer.NowPlaying;
 			Vector2 textSize = Main.fontMouseText.MeasureString(title);
-			Vector2 place = Center - new Vector2(width / 2 - 5f, height / 2 - 5f);
-			if (textSize.X <= width)
-			{
-				Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, title, place.X, place.Y,
-					Color.White, Color.Black, textSize);
-			}
-			else
-			{
-				// TODO: rolling effect
-				Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, title, place.X, place.Y,
-					Color.White, Color.Black, textSize);
-			}
+			float placeX = TopLeft.X + titlePadding.X + textSize.X;
+			float placeY = TopLeft.Y + titlePadding.Y + textSize.Y;
+			Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, title, placeX, placeY,
+				Color.White, Color.Black, textSize);	// TODO: if too long, start rolling.
 		}
 
 		private void DrawTime(SpriteBatch sb)
 		{
 			string text = string.Format("{0}/{1}", playPosition.ToString(@"mm\:ss"), playLength.ToString(@"mm\:ss"));
 			Vector2 textSize = Main.fontMouseText.MeasureString(text);
-			Vector2 place = Center - new Vector2(width / 2 - 5f, height / 2 - (5f + progressPadding.Y));
+			float placeX = TopLeft.X + progressPadding.X + textSize.X;
+			float placeY = TopLeft.Y + progressPadding.Y + textSize.Y;
 			Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, text,
-				place.X, place.Y, Color.White, Color.Black, textSize);
+				placeX, placeY, Color.White, Color.Black, textSize);
 		}
 	}
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.UI;
 
 namespace MusicBox.UI
@@ -15,6 +16,23 @@ namespace MusicBox.UI
 		private UIButton close;
 		private Vector2 _offset = new Vector2();
 		private bool _dragging = false;
+
+		protected sealed override void DrawSelf(SpriteBatch spriteBatch)
+		{
+			Vector2 MousePosition = Main.MouseScreen;
+			if (WindowPanel.ContainsPoint(MousePosition))
+			{
+				Main.LocalPlayer.mouseInterface = true;
+				Main.LocalPlayer.showItemIcon = false;
+			}
+			if (_dragging)
+			{
+				WindowPanel.Left.Set(MousePosition.X - _offset.X, 0f);
+				WindowPanel.Top.Set(MousePosition.Y - _offset.Y, 0f);
+				Recalculate();
+			}
+			OnDraw(spriteBatch);
+		}
 
 		public sealed override void OnInitialize()
 		{
