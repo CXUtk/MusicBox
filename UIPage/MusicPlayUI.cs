@@ -35,6 +35,8 @@ namespace MusicBox.UIPage
 		private TimeSpan _playPosition;
 		private TimeSpan _playLength;
 
+		private bool dontUpdatePlayPosition = false;
+
 		private Vector2 Center
 		{
 			get
@@ -89,6 +91,7 @@ namespace MusicBox.UIPage
 			_playSlider.StartX = -6f;
 			_playSlider.Scale = 1.6f;
 			_playSlider.EndX = UI_BAR_WIDTH - 24f;
+			_playSlider.OnValueChange += _playSlider_OnValueChange;
 			_progressBar.Append(_playSlider);
 
 
@@ -115,6 +118,12 @@ namespace MusicBox.UIPage
 			_backwardButton.OnClick += _backwardButton_OnClick;
 			WindowPanel.Append(_backwardButton);
 
+		}
+
+		private void _playSlider_OnValueChange(float value, UIElement sender)
+		{
+			musicPlayer.PlayFrom(value);
+			dontUpdatePlayPosition = true;
 		}
 
 		private void _backwardButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
@@ -187,6 +196,7 @@ namespace MusicBox.UIPage
 
 		private void MusicPlayer_OnProgressUpdate(TimeSpan curPos, TimeSpan totalLen)
 		{
+			dontUpdatePlayPosition = false;
 			_playPosition = curPos;
 			_playLength = totalLen;
 		}
@@ -235,8 +245,11 @@ namespace MusicBox.UIPage
 			float factor = _playPosition.Ticks / (float)_playLength.Ticks;
 			if (double.IsNaN(factor))
 				factor = 0;
-			_progressBar.Value = factor;
-			_playSlider.Value = factor;
+			if (!_playSlider.Dragging && !dontUpdatePlayPosition)
+			{
+				_playSlider.Value = factor;
+			}
+			_progressBar.Value = _playSlider.Value;
 		}
 
 	}

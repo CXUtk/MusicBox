@@ -92,14 +92,15 @@ namespace MusicBox.Music
 				PerformFFT = true,
 			};
 			aggregator.FFTCalculated += Aggregator_FFTCalculated;
+			playAction?.Invoke();
 			outputDevice.Stop();
 			outputDevice.Init(aggregator);
 			outputDevice.Play();
 			while (outputDevice.PlaybackState == PlaybackState.Playing ||
 					outputDevice.PlaybackState == PlaybackState.Paused)
 			{
+				Thread.Sleep(16);
 				OnProgressUpdate(audioFile.CurrentTime, audioFile.TotalTime);
-				Thread.Sleep(1000);
 			}
 			isMusicEnd = true;
 			// 事件驱动
@@ -131,6 +132,7 @@ namespace MusicBox.Music
 		/// </summary>
 		public void SwitchNextSong()
 		{
+			playAction = null;
 			if (!isMusicEnd)
 			{
 				playSongThread.Abort();
@@ -145,6 +147,7 @@ namespace MusicBox.Music
 		/// </summary>
 		public void SwitchPrevSong()
 		{
+			playAction = null;
 			playSongThread.Abort();
 			CurrentSong--;
 			if (CurrentSong < 0)
@@ -171,6 +174,7 @@ namespace MusicBox.Music
 		/// </summary>
 		public void Play()
 		{
+			playAction = null;
 			if (isStopped || isMusicEnd)
 			{
 				playNew();
@@ -182,8 +186,28 @@ namespace MusicBox.Music
 			}
 		}
 
+		private Action playAction = null;
+		/// <summary>
+		/// Start playing the song from the beginning.
+		/// </summary>
+		public void PlayFrom(double percent)
+		{
+			if (isStopped || isMusicEnd)
+			{
+				playAction = new Action(() => SetTime(percent));
+				playNew();
+				return;
+			}
+			if (IsPaused)
+			{
+				resume();
+			}
+			SetTime(percent);
+		}
+
 		public void PlayRandom()
 		{
+			playAction = null;
 			playSongThread.Abort();
 			CurrentSong = Main.rand.Next(0, SongFiles.Count);
 			playNew();
@@ -200,14 +224,12 @@ namespace MusicBox.Music
 		/// </summary>
 		/// <param name="time">The time to set</param>
 		/// <returns>If success.</returns>
-		public bool SetTime(TimeSpan time)
+		public void SetTime(TimeSpan time)
 		{
-			if (isStopped) return false;
-			if (playSongThread == null || audioFile == null)
-				return false;
-			if (time > audioFile.TotalTime) return false;
+			if (time > audioFile.TotalTime)
+				throw new ArgumentException("设置了非法的时间");
 			double percent = time.TotalMilliseconds / audioFile.TotalTime.TotalMilliseconds;
-			return SetTime(percent);
+			SetTime(percent);
 		}
 
 		/// <summary>
@@ -215,14 +237,11 @@ namespace MusicBox.Music
 		/// </summary>
 		/// <param name="percent"></param>
 		/// <returns></returns>
-		public bool SetTime(double percent)
+		public void SetTime(double percent)
 		{
-			if (isStopped) return false;
-			if (playSongThread == null || audioFile == null)
-				return false;
-			if (percent > 1 || percent < 0) return false;
+			if(percent < 0 || percent > 1)
+				throw new ArgumentException("设置了非法的时间");
 			audioFile.Position = (long)(percent * (audioFile.Length - 1));
-			return true;
 		}
 
 		public void Dispose()

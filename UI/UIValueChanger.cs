@@ -11,7 +11,6 @@ using Terraria.GameContent.UI.Elements;
 
 namespace MusicBox.UI
 {
-	public delegate void ValueChangeEvent(float value, UIElement sender);
 
     public class UIValueChanger : UIElement
     {

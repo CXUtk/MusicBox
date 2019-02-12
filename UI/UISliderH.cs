@@ -10,10 +10,12 @@ using Terraria.UI;
 
 namespace MusicBox.UI
 {
-    public class UISliderH : UIElement
+	public delegate void ValueChangeEvent(float value, UIElement sender);
+	public class UISliderH : UIElement
     {
 		public new event UIElement.MouseEvent OnMouseDown;
 		public new event UIElement.MouseEvent OnMouseUp;
+		public event ValueChangeEvent OnValueChange;
 
 		/// <summary>
 		/// 滑块贴图
@@ -23,7 +25,7 @@ namespace MusicBox.UI
 
 		public float Value { get; set; }
 		public float Scale { get; set; }
-
+		public bool Dragging { get { return _isDragging; } }
 
 		public float StartX { get; set; }
 		public float EndX { get; set; }
@@ -52,7 +54,11 @@ namespace MusicBox.UI
 
 		public override void MouseUp(UIMouseEvent evt)
 		{
-			_isDragging = false;
+			if (_isDragging)
+			{
+				_isDragging = false;
+				OnValueChange?.Invoke(Value, this);
+			}
 			OnMouseUp?.Invoke(evt, this);
 		}
 
@@ -81,6 +87,7 @@ namespace MusicBox.UI
 				{
 					Left.Set(pivot, 0f);
 				}
+				Value = (Left.Pixels - StartX) / (EndX - StartX);
 				Recalculate();
 			}
 			else
