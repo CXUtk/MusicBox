@@ -80,13 +80,14 @@
     <Content Include="Images\Box2.png" />
     <Content Include="Images\CloseButton.png" />
     <Content Include="Images\PlaySlider.png" />
+    <Content Include="Images\PlaySliderN.png" />
     <Content Include="Images\关闭键（未选中）.png" />
     <Content Include="Images\关闭键（选中）.png" />
     <Content Include="Images\ForwardButtonN.png" />
     <Content Include="Images\ForwardButton.png" />
     <Content Include="Images\BackwardButtonN.png" />
     <Content Include="Images\BackwardButton.png" />
-    <Content Include="Images\封面框框.png" />
+    <Content Include="Images\CoverFrame.png" />
     <Content Include="Images\播放历史（未选中）.png" />
     <Content Include="Images\播放历史（选中）.png" />
     <Content Include="Images\PlayButtonN.png" />
@@ -126,6 +127,7 @@
     <Compile Include="UI\UIAdvText.cs" />
     <Compile Include="UI\UIButton.cs" />
     <Compile Include="UI\UIBar.cs" />
+    <Compile Include="UI\UIFixedImage.cs" />
     <Compile Include="UI\UIPicButton.cs" />
     <Compile Include="UI\UISliderH.cs" />
     <Compile Include="UI\UISlot.cs" />

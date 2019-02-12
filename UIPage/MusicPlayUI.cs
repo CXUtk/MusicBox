@@ -18,11 +18,12 @@ namespace MusicBox.UIPage
 {
 	public class MusicPlayUI : AdvWindowUIState
 	{   
-		private const float UI_PANEL_WIDTH = 480f;
+		private const float UI_PANEL_WIDTH = 600f;
 		private const float UI_PANEL_HEIGHT = 360f;
 
 		private const float UI_BAR_WIDTH = 400f;
 		private const float UI_BAR_HEIGHT = 16f;
+		private const float UI_BAR_LEFT_OFFSET = 40f;
 
 		private MusicPlayer musicPlayer { get { return MusicBox.Instance.MusicPlayer;  } }
 
@@ -31,6 +32,8 @@ namespace MusicBox.UIPage
 		private UIPicButton _forwardButton;
 		private UIPicButton _backwardButton;
 		private UISliderH _playSlider;
+		private Texture2D _songTexture;
+		private UIFixedImage _songImage;
 
 		private TimeSpan _playPosition;
 		private TimeSpan _playLength;
@@ -48,6 +51,7 @@ namespace MusicBox.UIPage
 		protected override void Initialize(UIAdvPanel WindowPanel)
 		{
 			musicPlayer.OnProgressUpdate += MusicPlayer_OnProgressUpdate;
+			musicPlayer.OnSongPicLoaded += MusicPlayer_OnSongPicLoaded;
 			base.Initialize(WindowPanel);
 			WindowPanel.MainTexture = MusicBox.ModTexturesTable["AdvInvBack1"];
 			WindowPanel.SetPadding(0);
@@ -61,7 +65,7 @@ namespace MusicBox.UIPage
 			_progressBar = new UIBar();
 			_progressBar.SetPadding(0);
 			_progressBar.Top.Set(100f, 0.5f);
-			_progressBar.Left.Set(-UI_BAR_WIDTH / 2, 0.5f);
+			_progressBar.Left.Set(-UI_BAR_WIDTH / 2 + UI_BAR_LEFT_OFFSET, 0.5f);
 			_progressBar.Width.Set(UI_BAR_WIDTH, 0f);
 			_progressBar.Height.Set(UI_BAR_HEIGHT, 0f);
 			_progressBar.BarFrameTex = MusicBox.ModTexturesTable["BarFrame"];
@@ -83,22 +87,24 @@ namespace MusicBox.UIPage
 			WindowPanel.Append(_playButton);
 
 			_playSlider = new UISliderH();
-			_playSlider.Texture = MusicBox.ModTexturesTable["PlaySlider"];
+			_playSlider.Texture = MusicBox.ModTexturesTable["PlaySliderN"];
 			_playSlider.Top.Set(0, 0f);
 			_playSlider.Left.Set(0, 0f);
 			_playSlider.Width.Set(30, 0f);
 			_playSlider.Height.Set(30, 0f);
-			_playSlider.StartX = -6f;
-			_playSlider.Scale = 1.6f;
-			_playSlider.EndX = UI_BAR_WIDTH - 24f;
+			_playSlider.StartX = 6f;
+			_playSlider.EndX = UI_BAR_WIDTH - 6;
+			_playSlider.Scale = 1.35f;
 			_playSlider.OnValueChange += _playSlider_OnValueChange;
+			_playSlider.OnMouseOver += _playSlider_OnMouseOver;
+			_playSlider.OnMouseOut += _playSlider_OnMouseOut;
 			_progressBar.Append(_playSlider);
 
 
 			_forwardButton = new UIPicButton();
 			_forwardButton.Texture = MusicBox.ModTexturesTable["ForwardButtonN"];
 			_forwardButton.Top.Set(135f - 15f, 0.5f);
-			_forwardButton.Left.Set(30f, 0.5f);
+			_forwardButton.Left.Set(30f + UI_BAR_LEFT_OFFSET, 0.5f);
 			_forwardButton.Width.Set(30, 0f);
 			_forwardButton.Height.Set(30, 0f);
 			_forwardButton.OnMouseHover += _forwardButton_OnMouseHover;
@@ -110,7 +116,7 @@ namespace MusicBox.UIPage
 			_backwardButton = new UIPicButton();
 			_backwardButton.Texture = MusicBox.ModTexturesTable["BackwardButtonN"];
 			_backwardButton.Top.Set(135f - 15f, 0.5f);
-			_backwardButton.Left.Set(-60f, 0.5f);
+			_backwardButton.Left.Set(-60f + UI_BAR_LEFT_OFFSET, 0.5f);
 			_backwardButton.Width.Set(30, 0f);
 			_backwardButton.Height.Set(30, 0f);
 			_backwardButton.OnMouseHover += _backwardButton_OnMouseHover;
@@ -118,6 +124,31 @@ namespace MusicBox.UIPage
 			_backwardButton.OnClick += _backwardButton_OnClick;
 			WindowPanel.Append(_backwardButton);
 
+			_songTexture = MusicBox.ModTexturesTable["AdvInvBack1"];
+			_songImage = new UIFixedImage(_songTexture);
+			_songImage.Top.Set(60f, 0.5f);
+			_songImage.Left.Set(-UI_BAR_WIDTH / 2 + UI_BAR_LEFT_OFFSET - 100f, 0.5f);
+			_songImage.Width.Set(80f, 0f);
+			_songImage.Height.Set(80f, 0f);
+			WindowPanel.Append(_songImage);
+		}
+
+		private void MusicPlayer_OnSongPicLoaded(byte[] data)
+		{
+			using (MemoryStream ms = new MemoryStream(data)) {
+				_songTexture = Texture2D.FromStream(Main.instance.GraphicsDevice, ms);
+			}
+			_songImage.Texture = _songTexture;
+		}
+
+		private void _playSlider_OnMouseOut(UIMouseEvent evt, UIElement listeningElement)
+		{
+			_playSlider.Texture = MusicBox.ModTexturesTable["PlaySliderN"];
+		}
+
+		private void _playSlider_OnMouseOver(UIMouseEvent evt, UIElement listeningElement)
+		{
+			_playSlider.Texture = MusicBox.ModTexturesTable["PlaySlider"];
 		}
 
 		private void _playSlider_OnValueChange(float value, UIElement sender)
@@ -129,6 +160,7 @@ namespace MusicBox.UIPage
 		private void _backwardButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
 		{
 			musicPlayer.SwitchPrevSong();
+			UpdatePlayButton();
 		}
 
 		private void _backwardButton_OnMouseOut(UIMouseEvent evt, UIElement listeningElement)
@@ -144,6 +176,7 @@ namespace MusicBox.UIPage
 		private void _forwardButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
 		{
 			musicPlayer.SwitchNextSong();
+			UpdatePlayButton();
 		}
 
 		private void _forwardButton_OnMouseOut(UIMouseEvent evt, UIElement listeningElement)
@@ -171,6 +204,11 @@ namespace MusicBox.UIPage
 		}
 
 		private void _playButton_OnMouseOut(UIMouseEvent evt, UIElement listeningElement)
+		{
+			UpdatePlayButton();
+		}
+
+		private void UpdatePlayButton()
 		{
 			if (musicPlayer.IsPaused)
 			{
@@ -209,6 +247,9 @@ namespace MusicBox.UIPage
 		{
 			base.DrawChildren(sb);
 			DrawProgressBar(sb);
+			Rectangle coverbox = _songImage.GetOuterDimensions().ToRectangle();
+			Drawing.DrawAdvBox(sb, new Rectangle(coverbox.X - 2, coverbox.Y - 2, coverbox.Width + 4, coverbox.Height + 4),
+				Color.White, MusicBox.ModTexturesTable["CoverFrame"], new Vector2(10, 10));
 			// DrawSongList(sb);
 		}
 
@@ -220,8 +261,6 @@ namespace MusicBox.UIPage
 			Vector2 textSize = Main.fontMouseText.MeasureString(text);
 			Terraria.Utils.DrawBorderStringFourWay(sb, Main.fontMouseText, text,
 				barCenter.X, barCenter.Y - 12, Color.White, Color.Black, textSize * 0.5f);
-			//var texSlider = MusicBox.ModTexturesTable["PlaySlider"];
-			//sb.Draw(texSlider, _progressBar.ValueCenter, null, Color.White, 0, texSlider.Size() * 0.5f, 1.5f, SpriteEffects.None, 0f);
 		}
 
 		private void DrawSongList(SpriteBatch sb)

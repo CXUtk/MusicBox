@@ -77,22 +77,22 @@ namespace MusicBox.UI
 				var pivot = Main.MouseScreen.X - Parent.GetInnerDimensions().X;
 				if (pivot < StartX)
 				{
-					Left.Set(StartX, 0f);
+					Left.Set(StartX - Width.Pixels * 0.5f, 0f);
 				}
 				else if (pivot > EndX)
 				{
-					Left.Set(EndX, 0f);
+					Left.Set(EndX - Width.Pixels * 0.5f, 0f);
 				}
 				else
 				{
-					Left.Set(pivot, 0f);
+					Left.Set(pivot - Width.Pixels * 0.5f, 0f);
 				}
-				Value = (Left.Pixels - StartX) / (EndX - StartX);
+				Value = (Left.Pixels - StartX + Width.Pixels * 0.5f) / (EndX - StartX);
 				Recalculate();
 			}
 			else
 			{
-				Left.Set(StartX + (EndX - StartX) * Value, 0f);
+				Left.Set(StartX + (EndX - StartX) * Value - Width.Pixels * 0.5f, 0f);
 			}
 			base.Update(gameTime);
 		}

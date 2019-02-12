@@ -10,18 +10,20 @@ using System.Windows.Forms;
 
 namespace MusicBox.Music
 {
+	public delegate void SongTextureEventHandler(byte[] data);
 	public class MusicPlayer
 	{
 		private bool isMusicEnd;
 		private bool isStopped;
 		private Thread playSongThread;
 		private IWavePlayer outputDevice;
-		private AudioFileReader audioFile;      // 暂时使用AudioFileReader
+		private Mp3FileReader audioFile; 
 		private TagLib.Tag currentSongFileDescriptor;
 
 		public event EventHandler OnMusicEnd;
 		public event EventHandler<FftEventArgs> OnFFTCalculated;
 		public event UpdateProgressEventHandler OnProgressUpdate;
+		public event SongTextureEventHandler OnSongPicLoaded;
 
 		private string playSrc;
 		public string PlaySrc
@@ -62,7 +64,7 @@ namespace MusicBox.Music
 			isStopped = true;
 			IsPaused = true;
 			CurrentSong = 0;
-			outputDevice = new WaveOutEvent
+			outputDevice = new WaveOut
 			{
 				Volume = 0.2f,
 				DesiredLatency = 200,
@@ -79,32 +81,48 @@ namespace MusicBox.Music
 
 		private void playSong()
 		{
-			// 性能关键点，考虑用cache
-			// Dispose 不要乱用， 容易引发异常且未观测到任何性能提升
-			TagLib.File songFile = TagLib.File.Create(SongFiles[CurrentSong]);
-			currentSongFileDescriptor = songFile.Tag;
-			songFile.Dispose();
-			
-			audioFile = new AudioFileReader(SongFiles[CurrentSong]);
-			SampleAggregator aggregator = new SampleAggregator(audioFile)
+			while (!isStopped)
 			{
-				NotificationCount = audioFile.WaveFormat.SampleRate / 10000,
-				PerformFFT = true,
-			};
-			aggregator.FFTCalculated += Aggregator_FFTCalculated;
-			playAction?.Invoke();
-			outputDevice.Stop();
-			outputDevice.Init(aggregator);
-			outputDevice.Play();
-			while (outputDevice.PlaybackState == PlaybackState.Playing ||
-					outputDevice.PlaybackState == PlaybackState.Paused)
-			{
-				Thread.Sleep(16);
-				OnProgressUpdate(audioFile.CurrentTime, audioFile.TotalTime);
+				isMusicEnd = false;
+				TagLib.File songFile = TagLib.File.Create(SongFiles[CurrentSong]);
+				currentSongFileDescriptor = songFile.Tag;
+				songFile.Dispose();
+				foreach (var pic in currentSongFileDescriptor.Pictures)
+				{
+					OnSongPicLoaded?.Invoke(pic.Data.Data);
+					break;
+				}
+
+				// 这个bug是当前第一优先级
+				try
+				{
+
+					audioFile = new Mp3FileReader(SongFiles[CurrentSong]);
+				}
+				catch(Exception ex)
+				{
+				}
+				//SampleAggregator aggregator = new SampleAggregator(audioFile)
+				//{
+				//	NotificationCount = audioFile.WaveFormat.SampleRate / 10000,
+				//	PerformFFT = true,
+				//};
+				//aggregator.FFTCalculated += Aggregator_FFTCalculated;
+				playAction?.Invoke();
+				outputDevice.Stop();
+				outputDevice.Init(audioFile);
+				outputDevice.Play();
+				while (!Main.gameMenu && !isMusicEnd && (outputDevice.PlaybackState == PlaybackState.Playing ||
+						outputDevice.PlaybackState == PlaybackState.Paused))
+				{
+					Thread.Sleep(16);
+					OnProgressUpdate(audioFile.CurrentTime, audioFile.TotalTime);
+				}
+				if (Main.gameMenu || isStopped)
+					break;
+				CurrentSong = (CurrentSong + 1) % SongFiles.Count;
+				playAction = null;
 			}
-			isMusicEnd = true;
-			// 事件驱动
-			OnMusicEnd(this, new EventArgs());
 		}
 
 		private void Aggregator_FFTCalculated(object sender, FftEventArgs e)
@@ -114,11 +132,12 @@ namespace MusicBox.Music
 
 		private void playNew()
 		{
-			playSongThread = new Thread(playSong);
-			playSongThread.Start();
 			isMusicEnd = false;
 			isStopped = false;
 			IsPaused = false;
+			playSongThread = new Thread(playSong);
+			playSongThread.Start();
+
 		}
 
 		private void resume()
@@ -133,13 +152,13 @@ namespace MusicBox.Music
 		public void SwitchNextSong()
 		{
 			playAction = null;
-			if (!isMusicEnd)
+			if (!isMusicEnd && playSongThread != null)
 			{
-				playSongThread.Abort();
 				isMusicEnd = true;
 			}
-			CurrentSong = (CurrentSong + 1) % SongFiles.Count;
-			playNew();
+			//CurrentSong = (CurrentSong + 1) % SongFiles.Count;
+			//playNew();
+
 		}
 
 		/// <summary>
@@ -148,11 +167,9 @@ namespace MusicBox.Music
 		public void SwitchPrevSong()
 		{
 			playAction = null;
-			playSongThread.Abort();
-			CurrentSong--;
-			if (CurrentSong < 0)
-				CurrentSong += SongFiles.Count;
-			playNew();
+			isMusicEnd = true;
+			CurrentSong -= 2;
+			if(CurrentSong < 0) { CurrentSong += SongFiles.Count; }
 		}
 
 		/// <summary>
@@ -160,13 +177,12 @@ namespace MusicBox.Music
 		/// </summary>
 		public void Stop()
 		{
-			if (isStopped)
-				return;
-			outputDevice.Stop();
-			playSongThread.Abort();
-			playSongThread = null;
-			currentSongFileDescriptor = null;
+			IsPaused = true;
+			isMusicEnd = true;
 			isStopped = true;
+			playSongThread?.Join();
+			outputDevice?.Stop();
+			currentSongFileDescriptor = null;
 		}
 
 		/// <summary>
