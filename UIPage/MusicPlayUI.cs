@@ -13,6 +13,7 @@ using Terraria.GameContent.UI.Elements;
 using MusicBox.UI;
 using MusicBox.Utils;
 using MusicBox.Music;
+using NAudio.Dsp;
 
 namespace MusicBox.UIPage
 {
@@ -39,6 +40,8 @@ namespace MusicBox.UIPage
 		private TimeSpan _playLength;
 
 		private bool dontUpdatePlayPosition = false;
+		private double[] _specturmValue = new double[16];
+		private double _maxiumFFT;
 
 		private Vector2 Center
 		{
@@ -52,6 +55,8 @@ namespace MusicBox.UIPage
 		{
 			musicPlayer.OnProgressUpdate += MusicPlayer_OnProgressUpdate;
 			musicPlayer.OnSongPicLoaded += MusicPlayer_OnSongPicLoaded;
+			musicPlayer.OnFFTCalculated += MusicPlayer_OnFFTCalculated;
+			musicPlayer.OnMaximumCalculated += MusicPlayer_OnMaximumCalculated;
 			base.Initialize(WindowPanel);
 			WindowPanel.MainTexture = MusicBox.ModTexturesTable["AdvInvBack1"];
 			WindowPanel.SetPadding(0);
@@ -77,8 +82,8 @@ namespace MusicBox.UIPage
 
 			_playButton = new UIPicButton();
 			_playButton.Texture = MusicBox.ModTexturesTable["PlayButtonN"];
-			_playButton.Top.Set(135f - 15f, 0.5f);
-			_playButton.Left.Set(-15, 0.5f);
+			_playButton.Top.Set(135f - 15f , 0.5f);
+			_playButton.Left.Set(-15 + UI_BAR_LEFT_OFFSET, 0.5f);
 			_playButton.Width.Set(30, 0f);
 			_playButton.Height.Set(30, 0f);
 			_playButton.OnMouseHover += _playButton_OnMouseHover;
@@ -127,10 +132,48 @@ namespace MusicBox.UIPage
 			_songTexture = MusicBox.ModTexturesTable["AdvInvBack1"];
 			_songImage = new UIFixedImage(_songTexture);
 			_songImage.Top.Set(60f, 0.5f);
-			_songImage.Left.Set(-UI_BAR_WIDTH / 2 + UI_BAR_LEFT_OFFSET - 100f, 0.5f);
-			_songImage.Width.Set(80f, 0f);
-			_songImage.Height.Set(80f, 0f);
+			_songImage.Left.Set(-UI_BAR_WIDTH / 2 + UI_BAR_LEFT_OFFSET - 110f, 0.5f);
+			_songImage.Width.Set(90f, 0f);
+			_songImage.Height.Set(90f, 0f);
 			WindowPanel.Append(_songImage);
+		}
+
+		private void MusicPlayer_OnMaximumCalculated(object sender, MaxSampleEventArgs e)
+		{
+		}
+
+		private double GetYPosLog(Complex c)
+		{
+			double intensityDB = 10 * Math.Log(Math.Sqrt(c.X * c.X + c.Y * c.Y));
+			double minDB = -96;
+			if (intensityDB < minDB) intensityDB = minDB;
+			double percent = intensityDB / minDB;
+			return percent;
+		}
+
+		private double getAnother(Complex c)
+		{
+			return Math.Sqrt(c.X * c.X + c.Y * c.Y);
+		}
+		private bool drawfft = false;
+		private void MusicPlayer_OnFFTCalculated(object sender, FftEventArgs e)
+		{
+			if (drawfft) return;
+			var data = e.Result;
+			int step = 1024 / 16;
+			for (int i = 0; i < _specturmValue.Length; i++)
+			{
+				_specturmValue[i] = 0;
+			}
+			for (int i = 0; i < data.Length; i++)
+			{
+				_specturmValue[i / step] += getAnother(data[i]) / step;
+			}
+			_maxiumFFT = 0;
+			for (int i = 0; i < _specturmValue.Length; i++)
+			{
+				_maxiumFFT = Math.Max(_maxiumFFT, _specturmValue[i]);
+			}
 		}
 
 		private void MusicPlayer_OnSongPicLoaded(byte[] data)
@@ -243,6 +286,8 @@ namespace MusicBox.UIPage
 		{
 			MusicBox.Instance.CanShowMusicPlayUI = false;
 		}
+
+		private object locker;
 		protected override void DrawChildren(SpriteBatch sb)
 		{
 			base.DrawChildren(sb);
@@ -250,6 +295,18 @@ namespace MusicBox.UIPage
 			Rectangle coverbox = _songImage.GetOuterDimensions().ToRectangle();
 			Drawing.DrawAdvBox(sb, new Rectangle(coverbox.X - 2, coverbox.Y - 2, coverbox.Width + 4, coverbox.Height + 4),
 				Color.White, MusicBox.ModTexturesTable["CoverFrame"], new Vector2(10, 10));
+			Vector2 drawPos = _progressBar.GetDimensions().Position() - new Vector2(0, 50);
+			sb.Draw(Main.magicPixel, new Rectangle((int)(drawPos.X), (int)drawPos.Y, (int)UI_BAR_WIDTH, 3), Color.Gray);
+
+			drawfft = true;
+			int width = (int)(UI_BAR_WIDTH / 16);
+			for (int i = 0; i < _specturmValue.Length; i++)
+			{
+				int height = (int)(_specturmValue[i] / _maxiumFFT * 100f);
+				sb.Draw(Main.magicPixel, new Rectangle((int)(drawPos.X) + width * i,
+					(int)(drawPos.Y) - height, width, height), Color.White);
+			}
+			drawfft = false;
 			// DrawSongList(sb);
 		}
 

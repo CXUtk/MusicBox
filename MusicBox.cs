@@ -130,6 +130,7 @@ namespace MusicBox
 		public void SetNewMusicPlayer()
 		{
 			ConfigLoader.LoadConfig();
+			MusicPlayer?.Dispose();
 			MusicPlayer = new MusicPlayer
 			{
 				Volume = ConfigLoader.MusicConfig.Volume / 100f

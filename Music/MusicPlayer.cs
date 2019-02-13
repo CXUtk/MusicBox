@@ -17,11 +17,12 @@ namespace MusicBox.Music
 		private bool isStopped;
 		private Thread playSongThread;
 		private IWavePlayer outputDevice;
-		private Mp3FileReader audioFile; 
+		private AudioFileReader audioFile; 
 		private TagLib.Tag currentSongFileDescriptor;
 
 		public event EventHandler OnMusicEnd;
 		public event EventHandler<FftEventArgs> OnFFTCalculated;
+		public event EventHandler<MaxSampleEventArgs> OnMaximumCalculated;
 		public event UpdateProgressEventHandler OnProgressUpdate;
 		public event SongTextureEventHandler OnSongPicLoaded;
 
@@ -97,20 +98,21 @@ namespace MusicBox.Music
 				try
 				{
 
-					audioFile = new Mp3FileReader(SongFiles[CurrentSong]);
+					audioFile = new AudioFileReader(SongFiles[CurrentSong]);
 				}
 				catch(Exception ex)
 				{
 				}
-				//SampleAggregator aggregator = new SampleAggregator(audioFile)
-				//{
-				//	NotificationCount = audioFile.WaveFormat.SampleRate / 10000,
-				//	PerformFFT = true,
-				//};
-				//aggregator.FFTCalculated += Aggregator_FFTCalculated;
+				SampleAggregator aggregator = new SampleAggregator(audioFile)
+				{
+					NotificationCount = audioFile.WaveFormat.SampleRate / 1000,
+					PerformFFT = true,
+				};
+				aggregator.FFTCalculated += Aggregator_FFTCalculated;
+				aggregator.MaximumCalculated += Aggregator_MaximumCalculated;
 				playAction?.Invoke();
 				outputDevice.Stop();
-				outputDevice.Init(audioFile);
+				outputDevice.Init(aggregator);
 				outputDevice.Play();
 				while (!Main.gameMenu && !isMusicEnd && (outputDevice.PlaybackState == PlaybackState.Playing ||
 						outputDevice.PlaybackState == PlaybackState.Paused))
@@ -123,6 +125,11 @@ namespace MusicBox.Music
 				CurrentSong = (CurrentSong + 1) % SongFiles.Count;
 				playAction = null;
 			}
+		}
+
+		private void Aggregator_MaximumCalculated(object sender, MaxSampleEventArgs e)
+		{
+			OnMaximumCalculated?.Invoke(sender, e);
 		}
 
 		private void Aggregator_FFTCalculated(object sender, FftEventArgs e)
