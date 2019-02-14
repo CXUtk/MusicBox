@@ -40,8 +40,7 @@ namespace MusicBox.UIPage
 		private TimeSpan _playLength;
 
 		private bool dontUpdatePlayPosition = false;
-		private double[] _specturmValue = new double[16];
-		private double _maxiumFFT;
+		private SpectrumAnalyzer _spectrumAnalyzer;
 
 		private Vector2 Center
 		{
@@ -53,6 +52,7 @@ namespace MusicBox.UIPage
 
 		protected override void Initialize(UIAdvPanel WindowPanel)
 		{
+			_spectrumAnalyzer = new SpectrumAnalyzer();
 			musicPlayer.OnProgressUpdate += MusicPlayer_OnProgressUpdate;
 			musicPlayer.OnSongPicLoaded += MusicPlayer_OnSongPicLoaded;
 			musicPlayer.OnFFTCalculated += MusicPlayer_OnFFTCalculated;
@@ -140,40 +140,15 @@ namespace MusicBox.UIPage
 
 		private void MusicPlayer_OnMaximumCalculated(object sender, MaxSampleEventArgs e)
 		{
+			_spectrumAnalyzer.AddAmplitude(e.MaxSample, e.MinSample);
 		}
 
-		private double GetYPosLog(Complex c)
-		{
-			double intensityDB = 10 * Math.Log(Math.Sqrt(c.X * c.X + c.Y * c.Y));
-			double minDB = -96;
-			if (intensityDB < minDB) intensityDB = minDB;
-			double percent = intensityDB / minDB;
-			return percent;
-		}
-
-		private double getAnother(Complex c)
-		{
-			return Math.Sqrt(c.X * c.X + c.Y * c.Y);
-		}
+		
 		private bool drawfft = false;
 		private void MusicPlayer_OnFFTCalculated(object sender, FftEventArgs e)
 		{
 			if (drawfft) return;
-			var data = e.Result;
-			int step = 1024 / 16;
-			for (int i = 0; i < _specturmValue.Length; i++)
-			{
-				_specturmValue[i] = 0;
-			}
-			for (int i = 0; i < data.Length; i++)
-			{
-				_specturmValue[i / step] += getAnother(data[i]) / step;
-			}
-			_maxiumFFT = 0;
-			for (int i = 0; i < _specturmValue.Length; i++)
-			{
-				_maxiumFFT = Math.Max(_maxiumFFT, _specturmValue[i]);
-			}
+			_spectrumAnalyzer.CalculateFFT(e.Result);
 		}
 
 		private void MusicPlayer_OnSongPicLoaded(byte[] data)
@@ -287,7 +262,6 @@ namespace MusicBox.UIPage
 			MusicBox.Instance.CanShowMusicPlayUI = false;
 		}
 
-		private object locker;
 		protected override void DrawChildren(SpriteBatch sb)
 		{
 			base.DrawChildren(sb);
@@ -300,13 +274,31 @@ namespace MusicBox.UIPage
 
 			drawfft = true;
 			int width = (int)(UI_BAR_WIDTH / 16);
-			for (int i = 0; i < _specturmValue.Length; i++)
+			for (int i = 0; i < _spectrumAnalyzer.SpecturmValue.Length; i++)
 			{
-				int height = (int)(_specturmValue[i] / _maxiumFFT * 100f);
+				int height = (int)(_spectrumAnalyzer.SpecturmValue[i] / _spectrumAnalyzer.MaxSpectrumValue * 100f);
 				sb.Draw(Main.magicPixel, new Rectangle((int)(drawPos.X) + width * i,
 					(int)(drawPos.Y) - height, width, height), Color.White);
 			}
 			drawfft = false;
+
+			lock (_spectrumAnalyzer)
+			{
+				int cnt = 0;
+				foreach (var h in _spectrumAnalyzer.WaveLines)
+				{
+					int height = (int)(h * 50);
+
+					sb.Draw(Main.magicPixel, new Rectangle((int)(drawPos.X + cnt),
+							(int)(drawPos.Y) - 50 - height, 1, height * 2), Color.Yellow * 0.75f);
+					cnt++;
+				}
+				int y = (int)(_spectrumAnalyzer.AmplitudeRatio * 100);
+				Vector2 ampDrawPos = drawPos - new Vector2(40f, 0f);
+				sb.Draw(Main.magicPixel, new Rectangle((int)ampDrawPos.X,
+					(int)drawPos.Y - y, 30, y), Color.Cyan * 0.75f);
+
+			}
 			// DrawSongList(sb);
 		}
 

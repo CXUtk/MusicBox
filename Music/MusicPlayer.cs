@@ -105,7 +105,7 @@ namespace MusicBox.Music
 				}
 				SampleAggregator aggregator = new SampleAggregator(audioFile)
 				{
-					NotificationCount = audioFile.WaveFormat.SampleRate / 1000,
+					NotificationCount = audioFile.WaveFormat.SampleRate / 1024,
 					PerformFFT = true,
 				};
 				aggregator.FFTCalculated += Aggregator_FFTCalculated;

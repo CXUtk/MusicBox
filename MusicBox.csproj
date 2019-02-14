@@ -114,6 +114,7 @@
     <Compile Include="Music\MusicDelegate.cs" />
     <Compile Include="Music\MusicPlayer.cs" />
     <Compile Include="Music\SampleAggregator.cs" />
+    <Compile Include="Music\SpectrumAnalyzer.cs" />
     <Compile Include="TestCommands.cs" />
     <Compile Include="UIPage\TransparentFloatingDisplayerUI.cs" />
     <Compile Include="UIPage\MusicSettingUI.cs" />
