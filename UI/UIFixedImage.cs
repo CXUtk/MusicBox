@@ -50,6 +50,8 @@ namespace MusicBox.UI
 		}
 		protected override void DrawSelf(SpriteBatch sb)
 		{
+			if (Texture == null)
+				return;
 			if (UseBoxDraw)
 			{
 				Drawing.DrawAdvBox(sb, GetDimensions().ToRectangle(), Color.White, Texture, CornerSize);

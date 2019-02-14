@@ -12,11 +12,13 @@ namespace MusicBox.Music
 	{
 		private const int SPECTRUM_BIN_SIZE = 16;
 		private const int WAVE_LINE_NUMBER = 400;
+		private const int MOVING_AMP_SIZE = 16;
 
 		private double[] _specturmValue = new double[SPECTRUM_BIN_SIZE];
 		private double _maxiumFFT;
 
 		private LinkedList<double> _listSample = new LinkedList<double>();
+		private LinkedList<double> _amplitudeSample = new LinkedList<double>();
 		private double _movingTotal;
 		private double _movingAvg;
 		private double _amplitudeRatio;
@@ -62,6 +64,10 @@ namespace MusicBox.Music
 			{
 				_listSample.AddLast(0);
 			}
+			for(int i = 0; i < MOVING_AMP_SIZE; i++)
+			{
+				_amplitudeSample.AddLast(0);
+			}
 		}
 
 		private double GetYPosLog(Complex c)
@@ -80,19 +86,22 @@ namespace MusicBox.Music
 
 		public void CalculateFFT(Complex[] data)
 		{
-			int step = _windowSize / SPECTRUM_BIN_SIZE;
-			for (int i = 0; i < _specturmValue.Length; i++)
+			lock (this)
 			{
-				_specturmValue[i] = 0;
-			}
-			for (int i = 0; i < data.Length; i++)
-			{
-				_specturmValue[i / step] += getAnother(data[i]) / step;
-			}
-			_maxiumFFT = 0;
-			for (int i = 0; i < _specturmValue.Length; i++)
-			{
-				_maxiumFFT = Math.Max(_maxiumFFT, _specturmValue[i]);
+				int step = _windowSize / SPECTRUM_BIN_SIZE;
+				for (int i = 0; i < _specturmValue.Length; i++)
+				{
+					_specturmValue[i] = 0;
+				}
+				for (int i = 0; i < data.Length; i++)
+				{
+					_specturmValue[i / step] += getAnother(data[i]) / step;
+				}
+				_maxiumFFT = 0;
+				for (int i = 0; i < _specturmValue.Length; i++)
+				{
+					_maxiumFFT = Math.Max(_maxiumFFT, _specturmValue[i]);
+				}
 			}
 		}
 
@@ -100,7 +109,12 @@ namespace MusicBox.Music
 		{
 			lock (this)
 			{
-				_amplitudeRatio = maxVal - minVal;
+				_movingTotal += maxVal - minVal;
+				_amplitudeSample.AddLast(maxVal - minVal);
+				_movingTotal -= _amplitudeSample.First.Value;
+				_amplitudeSample.RemoveFirst();
+				_amplitudeRatio = _movingTotal / MOVING_AMP_SIZE;
+
 				_listSample.RemoveFirst();
 				_listSample.AddLast(maxVal - minVal);
 			}

@@ -147,17 +147,22 @@ namespace MusicBox.UIPage
 		private bool drawfft = false;
 		private void MusicPlayer_OnFFTCalculated(object sender, FftEventArgs e)
 		{
-			if (drawfft) return;
 			_spectrumAnalyzer.CalculateFFT(e.Result);
 		}
 
 		private void MusicPlayer_OnSongPicLoaded(byte[] data)
 		{
-			if(data == null) _songImage.Texture = MusicBox.ModTexturesTable["AdvInvBack1"];
-			using (MemoryStream ms = new MemoryStream(data)) {
+			if (data == null)
+			{
+				_songImage.Texture = _songTexture = MusicBox.ModTexturesTable["AdvInvBack1"];
+				return;
+			}
+			using (MemoryStream ms = new MemoryStream(data))
+			{
 				_songTexture = Texture2D.FromStream(Main.instance.GraphicsDevice, ms);
 			}
 			_songImage.Texture = _songTexture;
+
 		}
 
 		private void _playSlider_OnMouseOut(UIMouseEvent evt, UIElement listeningElement)
@@ -265,6 +270,7 @@ namespace MusicBox.UIPage
 
 		protected override void DrawChildren(SpriteBatch sb)
 		{
+
 			base.DrawChildren(sb);
 			DrawProgressBar(sb);
 			Rectangle coverbox = _songImage.GetOuterDimensions().ToRectangle();
@@ -273,18 +279,18 @@ namespace MusicBox.UIPage
 			Vector2 drawPos = _progressBar.GetDimensions().Position() - new Vector2(0, 50);
 			sb.Draw(Main.magicPixel, new Rectangle((int)(drawPos.X), (int)drawPos.Y, (int)UI_BAR_WIDTH, 3), Color.Gray);
 
-			drawfft = true;
-			int width = (int)(UI_BAR_WIDTH / 16);
-			for (int i = 0; i < _spectrumAnalyzer.SpecturmValue.Length; i++)
-			{
-				int height = (int)(_spectrumAnalyzer.SpecturmValue[i] / _spectrumAnalyzer.MaxSpectrumValue * 100f);
-				sb.Draw(Main.magicPixel, new Rectangle((int)(drawPos.X) + width * i,
-					(int)(drawPos.Y) - height, width, height), Color.White);
-			}
-			drawfft = false;
 
 			lock (_spectrumAnalyzer)
 			{
+				int width = (int)(UI_BAR_WIDTH / 16);
+				for (int i = 0; i < _spectrumAnalyzer.SpecturmValue.Length; i++)
+				{
+					int height = (int)(_spectrumAnalyzer.SpecturmValue[i] / _spectrumAnalyzer.MaxSpectrumValue * 100f);
+					sb.Draw(Main.magicPixel, new Rectangle((int)(drawPos.X) + width * i,
+						(int)(drawPos.Y) - height, width, height), Color.White);
+				}
+
+
 				int cnt = 0;
 				foreach (var h in _spectrumAnalyzer.WaveLines)
 				{
@@ -295,9 +301,9 @@ namespace MusicBox.UIPage
 					cnt++;
 				}
 				int y = (int)(_spectrumAnalyzer.AmplitudeRatio * 100);
-				Vector2 ampDrawPos = drawPos - new Vector2(40f, 0f);
+				Vector2 ampDrawPos = drawPos - new Vector2(80f, 0f);
 				sb.Draw(Main.magicPixel, new Rectangle((int)ampDrawPos.X,
-					(int)drawPos.Y - y, 30, y), Color.Cyan * 0.75f);
+					(int)drawPos.Y - y, 30, y), Color.Cyan * 0.9f);
 
 			}
 			// DrawSongList(sb);

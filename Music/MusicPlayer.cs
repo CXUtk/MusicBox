@@ -87,12 +87,21 @@ namespace MusicBox.Music
 				isMusicEnd = false;
 				TagLib.File songFile = TagLib.File.Create(SongFiles[CurrentSong]);
 				currentSongFileDescriptor = songFile.Tag;
-				songFile.Dispose();
-				foreach (var pic in currentSongFileDescriptor.Pictures)
+				if (currentSongFileDescriptor.Pictures.Length > 0)
 				{
-					OnSongPicLoaded?.Invoke(pic.Data.Data);
-					break;
+					foreach (var pic in currentSongFileDescriptor.Pictures)
+					{
+						OnSongPicLoaded?.Invoke(pic.Data.Data);
+						break;
+					}
 				}
+				else
+				{
+					OnSongPicLoaded?.Invoke(null);
+				}
+				songFile.Dispose();
+
+
 
 				// 这个bug是当前第一优先级
 				try
@@ -100,7 +109,7 @@ namespace MusicBox.Music
 
 					audioFile = new AudioFileReader(SongFiles[CurrentSong]);
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 				}
 				SampleAggregator aggregator = new SampleAggregator(audioFile)
