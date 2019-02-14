@@ -153,6 +153,7 @@ namespace MusicBox.UIPage
 
 		private void MusicPlayer_OnSongPicLoaded(byte[] data)
 		{
+			if(data == null) _songImage.Texture = MusicBox.ModTexturesTable["AdvInvBack1"];
 			using (MemoryStream ms = new MemoryStream(data)) {
 				_songTexture = Texture2D.FromStream(Main.instance.GraphicsDevice, ms);
 			}
