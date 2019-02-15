@@ -14,7 +14,7 @@ namespace MusicBox.Config
 
 		public MusicConfig()
 		{
-			Volume = 10;
+			Volume = 70;
 		}
 	}
 }
