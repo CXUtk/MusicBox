@@ -7,12 +7,14 @@ using System.Threading;
 using NAudio.Wave;
 using Terraria;
 using System.Windows.Forms;
+using Microsoft.Xna.Framework;
 
 namespace MusicBox.Music
 {
-	public delegate void SongTextureEventHandler(byte[] data);
 	public class MusicPlayer
 	{
+		public const float MAX_TRUE_VOLUMN = 0.3f;
+
 		private bool isMusicEnd;
 		private bool isStopped;
 		private Thread playSongThread;
@@ -38,12 +40,18 @@ namespace MusicBox.Music
 		public int CurrentSong { get; private set; }
 
 		private float volume;
+
+		/// <summary>
+		/// Not the same as true volumn of output device. From 0 to 1.5 float. device_volume = 0.3 * value
+		/// </summary>
 		public float Volume
 		{
 			get { return volume; }
 			set
 			{
-				volume = value;
+				if (value < 0)
+					throw new ArgumentException("设置了非法的音量");
+				volume = MAX_TRUE_VOLUMN * MathHelper.Min(value, 1.5f);
 				outputDevice.Volume = volume;
 			}
 		}
@@ -67,9 +75,10 @@ namespace MusicBox.Music
 			CurrentSong = 0;
 			outputDevice = new WaveOut
 			{
-				Volume = 0.2f,
+				Volume = MAX_TRUE_VOLUMN,
 				DesiredLatency = 200,
 			};
+			volume = MAX_TRUE_VOLUMN;
 		}
 
 		public void ResetSrc(string src)
@@ -111,6 +120,8 @@ namespace MusicBox.Music
 				}
 				catch (Exception ex)
 				{
+					CurrentSong = (CurrentSong + 1) % SongFiles.Count;
+					continue;
 				}
 				SampleAggregator aggregator = new SampleAggregator(audioFile)
 				{

@@ -90,6 +90,10 @@ namespace MusicBox.UIPage
 				}
 			}
 
+			if (string.IsNullOrEmpty(text))
+			{
+				text = musicPlayer.NowPlaying;
+			}
 			Vector2 textSize = Main.fontMouseText.MeasureString(text);
 			width = MathHelper.Max(textSize.X, MIN_WIDTH);
 			WindowPanel.Width.Set(width, 0f);

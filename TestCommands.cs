@@ -131,6 +131,38 @@ namespace MusicBox
 		}
 	}
 
+	public class SetVolumeCommand : CommandTemplate
+	{
+		public SetVolumeCommand()
+		{
+			name = "mbvol";
+			argstr = "";
+			desc = "SET VOLUMN (from 0 to 1)";
+		}
+
+		public override void Action(CommandCaller caller, string input, string[] args)
+		{
+			if (args.Length != 1)
+			{
+				Main.NewText("Wrong arguments.", Color.Red);
+				return;
+			}
+
+			float p;
+			try
+			{
+				p = float.Parse(args[0]);
+			}
+			catch
+			{
+				Main.NewText("Use percentage such as 0.15");
+				return;
+			}
+
+			MusicBox.Instance.MusicPlayer.Volume = p;
+		}
+	}
+
 	public abstract class CommandTemplate : ModCommand
 	{
 		public string name, argstr, desc;

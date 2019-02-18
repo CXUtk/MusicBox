@@ -7,4 +7,6 @@ using System.Threading.Tasks;
 namespace MusicBox.Music
 {
 	public delegate void UpdateProgressEventHandler(TimeSpan curPos, TimeSpan totalLen);
+
+	public delegate void SongTextureEventHandler(byte[] data);
 }
