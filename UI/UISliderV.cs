@@ -16,6 +16,8 @@ namespace MusicBox.UI
 		public new event UIElement.MouseEvent OnMouseUp;
 		public event ValueChangeEvent OnValueChange;
 
+		public event UIDrawEventHandler PreDraw;
+
 		/// <summary>
 		/// 滑块贴图
 		/// </summary>
@@ -67,6 +69,7 @@ namespace MusicBox.UI
 			if (_isDragging)
 			{
 				var pivot = Main.MouseScreen.Y - Parent.GetInnerDimensions().Y;
+
 				if (pivot > StartY)
 				{
 					Top.Set(StartY - Height.Pixels * 0.5f, 0f);
@@ -79,8 +82,8 @@ namespace MusicBox.UI
 				{
 					Top.Set(pivot - Height.Pixels * 0.5f, 0f);
 				}
-				Value = (Top.Pixels - EndY + Height.Pixels * 0.5f) / (StartY - EndY);
-				Recalculate();
+
+				Value = (StartY - Top.Pixels - Height.Pixels * 0.5f) / (StartY - EndY);
 				if (DragSync)
 				{
 					OnValueChange?.Invoke(Value, this);
@@ -88,14 +91,16 @@ namespace MusicBox.UI
 			}
 			else
 			{
-				Top.Set(StartY + (StartY - EndY) * Value - Height.Pixels * 0.5f, 0f);
+				Top.Set(StartY - (StartY - EndY) * Value - Height.Pixels * 0.5f, 0f);
 			}
+
 			base.Update(gameTime);
 		}
 
 		protected override void DrawSelf(SpriteBatch sb)
 		{
 			base.DrawSelf(sb);
+			PreDraw?.Invoke(this, sb);
 			var center = GetInnerDimensions().Center();
 			sb.Draw(Texture, center, null, Color.White, 0, Texture.Size() * 0.5f, Scale, SpriteEffects.None, 0f);
 		}

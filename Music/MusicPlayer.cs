@@ -51,8 +51,8 @@ namespace MusicBox.Music
 			{
 				if (value < 0)
 					throw new ArgumentException("设置了非法的音量");
-				volume = MAX_TRUE_VOLUMN * MathHelper.Min(value, 1.5f);
-				outputDevice.Volume = volume;
+				volume = value;
+				outputDevice.Volume = MAX_TRUE_VOLUMN * MathHelper.Min(value, 1.5f);
 			}
 		}
 

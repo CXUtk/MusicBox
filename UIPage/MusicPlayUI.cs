@@ -68,6 +68,7 @@ namespace MusicBox.UIPage
 			WindowPanel.Color = Color.White;
 			WindowPanel.CornerSize = 12;
 
+
 			_progressBar = new UIBar();
 			_progressBar.SetPadding(0);
 			_progressBar.Top.Set(100f, 0.5f);
@@ -108,16 +109,24 @@ namespace MusicBox.UIPage
 
 			_volumeSlider = new UISliderV();
 			_volumeSlider.Texture = MusicBox.ModTexturesTable["PlaySliderN"];
-			_volumeSlider.Top.Set(110f, 0f);
-			_volumeSlider.Left.Set(-30f, 1f);
+			_volumeSlider.Top.Set(200f, 0f);
+			_volumeSlider.Left.Set(-50f, 1f);
 			_volumeSlider.Width.Set(30, 0f);
 			_volumeSlider.Height.Set(30, 0f);
-			_volumeSlider.StartY = 110f;
-			_volumeSlider.EndY = 80f;
+			_volumeSlider.StartY = 200f;
+			_volumeSlider.EndY = 160f;
 			_volumeSlider.Scale = 1.35f;
 			_volumeSlider.OnValueChange += _volumeSlider_OnValueChange;
 			_volumeSlider.OnMouseOver += _volumeSlider_OnMouseOver;
 			_volumeSlider.OnMouseOut += _volumeSlider_OnMouseOut;
+			_volumeSlider.DragSync = true;
+			_volumeSlider.PreDraw += (s, sb) =>
+			{
+				sb.Draw(MusicBox.ModTexturesTable["Box"], new Rectangle((int)(WindowPanel.GetInnerDimensions().X + WindowPanel.GetInnerDimensions().Width) - 37,
+						(int)WindowPanel.GetInnerDimensions().Y + 160 - 5, 4, 50), Color.Gray * 0.5f);
+				//Drawing.DrawAdvBox(sb, new Rectangle((int)(WindowPanel.GetInnerDimensions().X + WindowPanel.GetInnerDimensions().Width) - 50 - 2,
+				//		(int)WindowPanel.GetInnerDimensions().Y + 200 - 2, 8, 44), Color.Gray, MusicBox.ModTexturesTable["Box"], new Vector2(8, 8));
+			};
 			WindowPanel.Append(_volumeSlider);
 
 			_forwardButton = new UIPicButton();
@@ -374,7 +383,10 @@ namespace MusicBox.UIPage
 				_playSlider.Value = factor;
 			}
 			_progressBar.Value = _playSlider.Value;
-			_volumeSlider.Value = musicPlayer.Volume;
+			if (!_volumeSlider.Dragging)
+			{
+				_volumeSlider.Value = musicPlayer.Volume;
+			}
 		}
 
 	}

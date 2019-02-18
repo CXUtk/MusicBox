@@ -10,8 +10,11 @@ using Terraria.UI;
 
 namespace MusicBox.UI
 {
+	public delegate void UIDrawEventHandler(UIElement sender, SpriteBatch sb);
 	public class UIAdvPanel : UIElement
 	{
+		public event UIDrawEventHandler PostDraw;
+		
 		public int CornerSize
 		{
 			get;
@@ -43,6 +46,7 @@ namespace MusicBox.UI
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			this.DrawPanel(spriteBatch, MainTexture, Color);
+			PostDraw?.Invoke(this, spriteBatch);
 		}
 
 	}
