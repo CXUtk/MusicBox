@@ -10,8 +10,7 @@ using Terraria.UI;
 
 namespace MusicBox.UI
 {
-	public delegate void ValueChangeEvent(float value, UIElement sender);
-	public class UISliderH : UIElement
+	public class UISliderV : UIElement
     {
 		public new event UIElement.MouseEvent OnMouseDown;
 		public new event UIElement.MouseEvent OnMouseUp;
@@ -28,12 +27,12 @@ namespace MusicBox.UI
 		public bool Dragging { get { return _isDragging; } }
 		public bool DragSync { get; set; }
 
-		public float StartX { get; set; }
-		public float EndX { get; set; }
+		public float StartY { get; set; }
+		public float EndY { get; set; }
 
 		private bool _isDragging = false;
 
-		public UISliderH()
+		public UISliderV()
         {
 			Value = 0f;
 			Scale = 1f;
@@ -67,20 +66,20 @@ namespace MusicBox.UI
 		{
 			if (_isDragging)
 			{
-				var pivot = Main.MouseScreen.X - Parent.GetInnerDimensions().X;
-				if (pivot < StartX)
+				var pivot = Main.MouseScreen.Y - Parent.GetInnerDimensions().Y;
+				if (pivot > StartY)
 				{
-					Left.Set(StartX - Width.Pixels * 0.5f, 0f);
+					Top.Set(StartY - Height.Pixels * 0.5f, 0f);
 				}
-				else if (pivot > EndX)
+				else if (pivot < EndY)
 				{
-					Left.Set(EndX - Width.Pixels * 0.5f, 0f);
+					Top.Set(EndY - Height.Pixels * 0.5f, 0f);
 				}
 				else
 				{
-					Left.Set(pivot - Width.Pixels * 0.5f, 0f);
+					Top.Set(pivot - Height.Pixels * 0.5f, 0f);
 				}
-				Value = (Left.Pixels - StartX + Width.Pixels * 0.5f) / (EndX - StartX);
+				Value = (Top.Pixels - EndY + Height.Pixels * 0.5f) / (StartY - EndY);
 				Recalculate();
 				if (DragSync)
 				{
@@ -89,7 +88,7 @@ namespace MusicBox.UI
 			}
 			else
 			{
-				Left.Set(StartX + (EndX - StartX) * Value - Width.Pixels * 0.5f, 0f);
+				Top.Set(StartY + (StartY - EndY) * Value - Height.Pixels * 0.5f, 0f);
 			}
 			base.Update(gameTime);
 		}

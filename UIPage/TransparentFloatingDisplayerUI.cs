@@ -66,6 +66,7 @@ namespace MusicBox.UIPage
 
 		private void DrawTitle(SpriteBatch sb)
 		{
+
 			TagLib.Tag title = musicPlayer.GetCurrentSongDescription();
 			string text;
 			if (title == null)

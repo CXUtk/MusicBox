@@ -12,8 +12,6 @@ namespace MusicBox.UI
 {
     public class UIBar : UIElement
     {
-
-
         public UIBar()
         {
 			FillerColor = Color.White;

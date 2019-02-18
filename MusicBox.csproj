@@ -130,6 +130,7 @@
     <Compile Include="UI\UIBar.cs" />
     <Compile Include="UI\UIFixedImage.cs" />
     <Compile Include="UI\UIPicButton.cs" />
+    <Compile Include="UI\UISliderV.cs" />
     <Compile Include="UI\UISliderH.cs" />
     <Compile Include="UI\UISlot.cs" />
     <Compile Include="UI\UITextButton.cs" />

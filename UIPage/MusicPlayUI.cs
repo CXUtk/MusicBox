@@ -35,6 +35,7 @@ namespace MusicBox.UIPage
 		private UISliderH _playSlider;
 		private Texture2D _songTexture;
 		private UIFixedImage _songImage;
+		private UISliderV _volumeSlider;
 
 		private TimeSpan _playPosition;
 		private TimeSpan _playLength;
@@ -105,6 +106,19 @@ namespace MusicBox.UIPage
 			_playSlider.OnMouseOut += _playSlider_OnMouseOut;
 			_progressBar.Append(_playSlider);
 
+			_volumeSlider = new UISliderV();
+			_volumeSlider.Texture = MusicBox.ModTexturesTable["PlaySliderN"];
+			_volumeSlider.Top.Set(110f, 0f);
+			_volumeSlider.Left.Set(-30f, 1f);
+			_volumeSlider.Width.Set(30, 0f);
+			_volumeSlider.Height.Set(30, 0f);
+			_volumeSlider.StartY = 110f;
+			_volumeSlider.EndY = 80f;
+			_volumeSlider.Scale = 1.35f;
+			_volumeSlider.OnValueChange += _volumeSlider_OnValueChange;
+			_volumeSlider.OnMouseOver += _volumeSlider_OnMouseOver;
+			_volumeSlider.OnMouseOut += _volumeSlider_OnMouseOut;
+			WindowPanel.Append(_volumeSlider);
 
 			_forwardButton = new UIPicButton();
 			_forwardButton.Texture = MusicBox.ModTexturesTable["ForwardButtonN"];
@@ -136,6 +150,21 @@ namespace MusicBox.UIPage
 			_songImage.Width.Set(90f, 0f);
 			_songImage.Height.Set(90f, 0f);
 			WindowPanel.Append(_songImage);
+		}
+
+		private void _volumeSlider_OnMouseOut(UIMouseEvent evt, UIElement listeningElement)
+		{
+			_volumeSlider.Texture = MusicBox.ModTexturesTable["PlaySliderN"];
+		}
+
+		private void _volumeSlider_OnMouseOver(UIMouseEvent evt, UIElement listeningElement)
+		{
+			_volumeSlider.Texture = MusicBox.ModTexturesTable["PlaySlider"];
+		}
+
+		private void _volumeSlider_OnValueChange(float value, UIElement sender)
+		{
+			musicPlayer.Volume = value;
 		}
 
 		private void MusicPlayer_OnMaximumCalculated(object sender, MaxSampleEventArgs e)
@@ -345,6 +374,7 @@ namespace MusicBox.UIPage
 				_playSlider.Value = factor;
 			}
 			_progressBar.Value = _playSlider.Value;
+			_volumeSlider.Value = musicPlayer.Volume;
 		}
 
 	}

@@ -80,7 +80,7 @@ namespace MusicBox
 			floatingDisplayUI.SetState(new TransparentFloatingDisplayerUI());
 
 			InterfaceManager.Add(musicUI);
-			InterfaceManager.Add(floatingDisplayUI);
+			// InterfaceManager.Add(floatingDisplayUI);
 		}
 
 		public override void UpdateUI(GameTime gameTime)
